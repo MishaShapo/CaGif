@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Image, Dimensions, Text } from 'react-native';
-import { Loop, Stage, Sprite } from 'react-game-kit/native';
+import { Image, Dimensions } from 'react-native';
+import { Loop, Stage } from 'react-game-kit/native';
+import HitBoxSprite from './components/common/HitBoxSprite';
 
 class App extends Component {
   render() {
@@ -12,14 +13,23 @@ class App extends Component {
               source={require('../graphics/background.png')}
               style={styles.bgStyle}
             >
-              <Sprite
-                src={require("../graphics/spritesheets/cat_spritesheet.png")}
-                tileHeight={185}
-                tileWidth={210}
-                steps={[9,9,7,9]}
-                state={1}
-                repeat
-                ticksPerFrame={5}
+              <HitBoxSprite
+              style = {styles.characterStyle}
+              left = {width/2 - 105}
+              top = {height/2 - 92}
+              src = {require("../graphics/spritesheets/cat_spritesheet.png")}
+              tileWidth = {210}
+              tileHeight = {185}
+              steps = {[9,9,7,9]}
+              touchStart={ () => {console.log('touchStart')}}
+              touchMove={ () => {console.log('touchMove')}}
+              touchEnd={ () => {console.log('touchEnd')}}
+              hitBox={{
+                left:105 - 30,
+                top: 92 - 30,
+                width: 60,
+                height: 60
+              }}
               />
             </Image>
           </Stage>
@@ -41,6 +51,10 @@ const styles = {
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  characterStyle: {
+    borderWidth: 5,
+    borderColor: 'blue'
   }
 }
 
