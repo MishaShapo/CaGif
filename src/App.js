@@ -15,20 +15,20 @@ class App extends Component {
             >
               <HitBoxSprite
               style = {styles.characterStyle}
-              left = {width/2 - 105}
-              top = {height/2 - 92}
+              left = {width/2-105}
+              top = {height/2-92}
               src = {require("../graphics/spritesheets/cat_spritesheet.png")}
               tileWidth = {210}
               tileHeight = {185}
               steps = {[9,9,7,9]}
-              touchStart={ () => {console.log('touchStart')}}
+              touchStart={(sprite) => this.touchStart(sprite)}
               touchMove={ () => {console.log('touchMove')}}
-              touchEnd={ () => {console.log('touchEnd')}}
+              touchEnd={ (sprite) => this.touchEnd(sprite)}
               hitBox={{
-                left:105 - 30,
-                top: 92 - 30,
-                width: 60,
-                height: 60
+                left:210/2-55,
+                top:185/2-70,
+                width: 95,
+                height: 145
               }}
               />
             </Image>
@@ -36,7 +36,22 @@ class App extends Component {
         </Loop>
     );
   }
+
+  touchStart(hbs){
+    hbs.setAnimationState(spriteAnimations.JUMP);
+  }
+
+  touchEnd(hbs){
+    hbs.setAnimationState(spriteAnimations.IDLE);
+  }
 }
+
+const spriteAnimations = {
+  IDLE: 0,
+  WALK: 1,
+  JUMP: 2,
+  HURT: 3
+};
 
 const styles = {
   loopStyle: {
@@ -47,14 +62,15 @@ const styles = {
     position: 'relative'
   },
   bgStyle: {
-    flex: 1,
+    // flex: 1,
     position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center'
+    // alignItems: 'center',
+    // justifyContent: 'center'
   },
   characterStyle: {
-    borderWidth: 5,
-    borderColor: 'blue'
+    width: 210,
+    height: 185,
+    position: 'relative'
   }
 }
 

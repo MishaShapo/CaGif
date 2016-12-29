@@ -16,6 +16,12 @@ export default class Sprite extends Component {
     ticksPerFrame: PropTypes.number,
     tileHeight: PropTypes.number,
     tileWidth: PropTypes.number,
+    hitBox : PropTypes.shape({
+      top: PropTypes.number,
+      left: PropTypes.number,
+      width: PropTypes.number,
+      height: PropTypes.number
+    })
   };
 
   static defaultProps = {
@@ -131,12 +137,16 @@ export default class Sprite extends Component {
   }
 
   render() {
+
     return (
       <View ref={component => this._root = component} style={{ ...this.getWrapperStyles(), ...this.props.style }}>
         <Image
           style={this.getImageStyles()}
           source={this.props.src}
-        />
+        >
+          <View style={{ ...this.props.hitBox}}>
+          </View>
+        </Image>
       </View>
     );
   }

@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import {
     PanResponder,
-    View
+    View,
+    Dimensions
 } from 'react-native';
 import Sprite from './Sprite';
 
@@ -15,20 +16,23 @@ export default class HitBoxSprite extends Component {
   /*TODO: PanResponder is having changing x-values becaue Sprite actually
     switches x values to create the affect of animation so perhaps try
     accounting for this with Sprite frame state or using a different wrapper?
+
+    This would actually be great to write about in your blog :)
   */
   constructor(props) {
     super(props);
-    console.log('constructor props: ',props,"this",this);
+    // console.log('constructor props: ',props,"this",this);
+    this.state = {
+      animationState: 0
+    };
     this.previousLeft = this.props.left;
     this.previousTop = this.props.top;
-    this.hitBox = this.props.hitBox;
-    this.spriteStyle = {
-      style: {
-        left: this.previousLeft,
-        top: this.previousTop,
-        ...this.props.style
-      }
+    this.screenDimensions = Dimensions.get('window');
+    this.collides = {
+      horizontal: false,
+      vertical: false
     };
+
     this.containerStyle = {
       style: {
         left: this.previousLeft,
@@ -40,11 +44,13 @@ export default class HitBoxSprite extends Component {
     this.touchStart =  this.props.touchStart.bind(this);
     this.touchEnd = this.props.touchEnd.bind(this);
     this.touchMove = this.props.touchMove.bind(this);
+    this.setAnimationState = this.setAnimationState.bind(this);
 
     this.handleShouldSetPanResponder = this.handleShouldSetPanResponder.bind(this);
     this.handlePanResponderGrant = this.handlePanResponderGrant.bind(this);
     this.handlePanResponderMove = this.handlePanResponderMove.bind(this);
     this.handlePanResponderEnd = this.handlePanResponderEnd.bind(this);
+
   }
 
   componentWillMount() {
@@ -63,7 +69,7 @@ export default class HitBoxSprite extends Component {
   }
 
   render() {
-    const { src,tileWidth,tileHeight,steps } = this.props;
+    const { src,tileWidth,tileHeight,steps,hitBox } = this.props;
     return (
       <View
         ref={container => this.container = container}
@@ -74,7 +80,9 @@ export default class HitBoxSprite extends Component {
           tileWidth={tileWidth}
           tileHeight={tileHeight}
           steps={steps}
+          state={this.state.animationState}
           ref={sprite => this.sprite = sprite}
+          hitBox={hitBox}
         />
       </View>
     );
@@ -82,40 +90,48 @@ export default class HitBoxSprite extends Component {
 
   _touchStart() {
     if(this.touchStart){
-      this.touchStart(this.spriteStyle);
+      this.touchStart(this);
       this._updateNativeStyles();
     }
   }
 
   _touchEnd() {
     if(this.touchEnd){
-      this.touchEnd({left: this.previousLeft, top: this.previousTop},this.spriteStyle);
+      this.touchEnd(this,{left: this.previousLeft, top: this.previousTop});
       this._updateNativeStyles();
     }
   }
 
   _touchMove(){
     if(this.touchMove){
-      this.touchMove(this.spriteStyle);
+      this.touchMove(this);
       this._updateNativeStyles();
     }
   }
 
   _updateNativeStyles() {
     this.container && this.container.setNativeProps(this.containerStyle);
-    // this.sprite && this.sprite.setNativeProps(this.spriteStyle);
+  }
+
+  setAnimationState(anim){
+    this.setState({
+      animationState: anim
+    });
   }
 
   handleShouldSetPanResponder( e ) {
     //Return whether or not the touch registered in the hitbox
-    console.log("this ranResponder : ",this);
-    const { left, top, width, height } = this.hitBox;
+    const { tileWidth, tileHeight, hitBox } = this.props;
+    const { left, top, width, height } = hitBox;
     const { locationX, locationY } = e.nativeEvent;
-    console.log("locationX : " + locationX + " , locationY : " + locationY);
-    return ( locationX >= left &&
-        locationX <= left + width &&
-        locationY >= top &&
-        locationY <= top + height);
+
+    const normalizedX = locationX % tileWidth;
+    const normalizedY = locationY % tileHeight;
+    // console.log('normalizedX : ', normalizedX, 'normalizedY',normalizedY);
+    return ( normalizedX >= left &&
+        normalizedX <= left + width &&
+        normalizedY >= top &&
+        normalizedY <= top + height);
    }
 
   handlePanResponderGrant() {
@@ -123,10 +139,30 @@ export default class HitBoxSprite extends Component {
   }
 
   handlePanResponderMove( e, gesture ) {
-    // this.spriteStyle.style.left = this.previousLeft + gesture.dx;
-    // this.spriteStyle.style.top = this.previousTop + gesture.dy;
-    this.containerStyle.style.left = this.previousLeft + gesture.dx;
-    this.containerStyle.style.top = this.previousTop + gesture.dy;
+    const {left, top, width, height } = this.props.hitBox;
+    const {style} = this.containerStyle;
+    const { dx, dy } = gesture;
+
+    // console.log("x0    : ", gesture.x0, " , y0    : ",gesture.y0);
+    // console.log("moveX : ", gesture.moveX, " , moveY : ",gesture.moveY);
+
+    const minX = -left;
+    const maxX = this.screenDimensions.width-(left+width);
+    const minY = -top;
+    const maxY = this.screenDimensions.height-(top+height);
+    if( this.previousLeft + dx < minX || this.previousLeft + dx > maxX ){
+      this.collides.horizontal = true;
+    } else {
+      style.left = this.previousLeft + gesture.dx;
+      this.collides.horizontal = false;
+    }
+    if( this.previousTop + dy < minY || this.previousTop + dy > maxY){
+      this.collides.vertical = true;
+    } else {
+      style.top = this.previousTop + gesture.dy;
+      this.collides.vertical = false;
+    }
+
     this._touchMove();
     this._updateNativeStyles();
   }
