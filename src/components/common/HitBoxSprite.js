@@ -41,9 +41,9 @@ export default class HitBoxSprite extends Component {
       }
     }
 
-    this.touchStart =  this.props.touchStart.bind(this);
-    this.touchEnd = this.props.touchEnd.bind(this);
-    this.touchMove = this.props.touchMove.bind(this);
+    this.touchStart =  this.props.touchStart && this.props.touchStart.bind(this);
+    this.touchEnd = this.props.touchEnd && this.props.touchEnd.bind(this);
+    this.touchMove = this.props.touchMove && this.props.touchMove.bind(this);
     this.setAnimationState = this.setAnimationState.bind(this);
 
     this.handleShouldSetPanResponder = this.handleShouldSetPanResponder.bind(this);
@@ -105,7 +105,6 @@ export default class HitBoxSprite extends Component {
   _touchMove(){
     if(this.touchMove){
       this.touchMove(this);
-      this._updateNativeStyles();
     }
   }
 
