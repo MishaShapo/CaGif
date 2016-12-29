@@ -6,7 +6,7 @@ class Home extends Component {
     const { containerStyle, textStyle} = styles;
     return (
       <View style={containerStyle}>
-        <Text style={textStyle}>Home</Text>
+        <Text style={textStyle}>Backpack</Text>
       </View>
     );
   }

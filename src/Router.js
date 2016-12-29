@@ -26,14 +26,17 @@ class RouterComponent extends Component {
         <Scene key="HomeParent">
           <Scene
             initial
+            sceneStyle={{position: 'relative', top: 64}}
             key='Home'
             component={Home}
             title='Home'
             rightButtonImage={require('../graphics/icons/store_icon.png')}
+            rightButtonIconStyle={styles.navigationIconStyle}
             onRight={this.gotoStore}
             leftButtonImage={require('../graphics/icons/inventory_icon.png')}
+            leftButtonIconStyle={styles.navigationIconStyle}
             onLeft={this.gotoBackpack}
-
+            navigationBarStyle={styles.navigationBarStyle}
           />
         </Scene>
         <Scene key="StoreParent" direction="horizontal">
@@ -43,7 +46,9 @@ class RouterComponent extends Component {
             component={Store}
             title='Store'
             leftButtonImage={require('../graphics/icons/home_icon.png')}
+            leftButtonIconStyle={styles.navigationIconStyle}
             onLeft={() => Actions.HomeParent({ type: ActionConst.BACK})}
+            navigationBarStyle={styles.navigationBarStyle}
           />
         </Scene>
         <Scene key="BackpackParent" direction="leftToRight">
@@ -53,11 +58,24 @@ class RouterComponent extends Component {
             component={Backpack}
             title='Backpack'
             rightButtonImage={require('../graphics/icons/home_icon.png')}
+            rightButtonIconStyle={styles.navigationIconStyle}
             onRight={() => Actions.HomeParent({ type: ActionConst.BACK})}
+            navigationBarStyle={styles.navigationBarStyle}
           />
         </Scene>
       </Router>
     );
+  }
+}
+
+const styles = {
+  navigationIconStyle : {
+    width: 40,
+    height: 40
+  },
+  navigationBarStyle: {
+    backgroundColor:'#007bff',
+    borderBottomWidth: 0
   }
 }
 

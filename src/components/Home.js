@@ -10,7 +10,7 @@ export default class Home extends Component {
         <Loop style={styles.loopStyle}>
           <Stage style={styles.stageStyle} width={width} height={height}>
             <Image
-              source={require('../../graphics/background.png')}
+              source={require('../../graphics/background_real.png')}
               style={styles.bgStyle}
             >
               <HitBoxSprite
