@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Scene, Router, Actions, ActionConst } from 'react-native-router-flux';
+import { Navigator, Image, TouchalbeOpacity } from 'react-native';
 import Home from './components/Home';
 import Store from './components/Store';
 import Backpack from './components/Backpack';
@@ -9,61 +9,117 @@ class RouterComponent extends Component {
 
   constructor(props){
     super(props);
-    this.gotoStore = this.gotoStore.bind(this);
-    this.gotoBackpack = this.gotoBackpack.bind(this);
+    this.state = {
+      loading: true
+    }
   }
 
-  gotoStore() {
-    Actions.StoreParent();
+  componentDidMount() {
+    console.log("didMount");
+    this.setState({
+      loading: false
+    });
   }
 
-  gotoBackpack(){
-    Actions.BackpackParent();
-  }
   render() {
-    return (
-      <Router sceneStyle={{ marginTop: 65 }} >
-        <Scene key="HomeParent">
-          <Scene
-            initial
-            sceneStyle={{position: 'relative', top: 64}}
-            key='Home'
-            component={Home}
-            title='Home'
-            rightButtonImage={require('../graphics/icons/store_icon.png')}
-            rightButtonIconStyle={styles.navigationIconStyle}
-            onRight={this.gotoStore}
-            leftButtonImage={require('../graphics/icons/inventory_icon.png')}
-            leftButtonIconStyle={styles.navigationIconStyle}
-            onLeft={this.gotoBackpack}
-            navigationBarStyle={styles.navigationBarStyle}
+    const routes = [
+        {title: "Home", index: 0},
+        {title: "Store", index: 1},
+        {title: "Backpack", index: 2}
+    ];
+
+    return(
+      <Navigator
+        initialRoute={routes[0]}
+        initialRouteStack={routes}
+        renderScene={(route) => {
+          switch (route.title) {
+            case "Home":
+            default:
+              return (<Home />);
+            case "Store":
+              return (<Store />);
+            case "Backpack":
+              return (<Backpack />);
+          }
+        }}
+        configureScene={(route, routeStack) => {
+          if(routeStack !== undefined){ //From Home to Store/Backpack
+            if(route.title === "Store") {
+              return Navigator.SceneConfigs.HorizontalSwipeJump;
+            } else {
+              return Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft;
+            }
+          } else { //From Store/Backpack to Home
+            if(route.title === "Store") {
+              return Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft;
+            } else {
+              return Navigator.SceneConfigs.HorizontalSwipeJump;
+            }
+          }
+        }}
+        navigationBar={
+          <Navigator.NavigationBar
+            routeMapper={{
+                LeftButton: (route,navigator) => {
+                  switch (route.title) {
+                    case "Home":
+                    default:
+                      return (
+                        <TouchalbeOpacity onPress={() => {
+                            navigator.push(routes[2]);
+                        }}>
+                          <Image
+                            source={require('../graphics/icons/backpack_icon.png')}
+                            style={styles.navigationIconStyle}
+                          />
+                        </TouchalbeOpacity>
+                      );
+                    case "Store":
+                      return(
+                        <TouchalbeOpacity onPress={() => navigator.pop()}>
+                          <Image
+                            source={require('../graphics/icons/home_icon.png')}
+                            style={styles.navigationIconStyle}
+                          />
+                        </TouchalbeOpacity>
+                      );
+                    case "Backpack":
+                      return null;
+                  }
+                },
+                RightButton: (route,navigator) => {
+                  switch (route.title) {
+                    case "Home":
+                    default:
+                      return (
+                        <TouchalbeOpacity onPress={() => {
+                            navigator.push(routes[1]);
+                        }}>
+                          <Image
+                            source={require('../graphics/icons/store_icon.png')}
+                            style={styles.navigationIconStyle}
+                          />
+                        </TouchalbeOpacity>
+                      );
+                    case "Store":
+                      return null;
+                    case "Backpack":
+                      return (
+                        <TouchalbeOpacity onPress={() => navigator.pop()}>
+                          <Image
+                            source={require('../graphics/icons/home_icon.png')}
+                            style={styles.navigationIconStyle}
+                          />
+                        </TouchalbeOpacity>
+                      );
+                }
+              },
+              Title: () => {null}
+            }}
           />
-        </Scene>
-        <Scene key="StoreParent" direction="horizontal">
-          <Scene
-            initial
-            key='Store'
-            component={Store}
-            title='Store'
-            leftButtonImage={require('../graphics/icons/home_icon.png')}
-            leftButtonIconStyle={styles.navigationIconStyle}
-            onLeft={() => Actions.HomeParent({ type: ActionConst.BACK})}
-            navigationBarStyle={styles.navigationBarStyle}
-          />
-        </Scene>
-        <Scene key="BackpackParent" direction="leftToRight">
-          <Scene
-            initial
-            key='Backpack'
-            component={Backpack}
-            title='Backpack'
-            rightButtonImage={require('../graphics/icons/home_icon.png')}
-            rightButtonIconStyle={styles.navigationIconStyle}
-            onRight={() => Actions.HomeParent({ type: ActionConst.BACK})}
-            navigationBarStyle={styles.navigationBarStyle}
-          />
-        </Scene>
-      </Router>
+        }
+      />
     );
   }
 }
@@ -71,7 +127,9 @@ class RouterComponent extends Component {
 const styles = {
   navigationIconStyle : {
     width: 40,
-    height: 40
+    height: 40,
+    marginLeft: 20,
+    marginRight: 20
   },
   navigationBarStyle: {
     backgroundColor:'#007bff',
