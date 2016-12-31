@@ -1,25 +1,11 @@
 import React, { Component } from 'react';
-import { Navigator, Image, TouchalbeOpacity } from 'react-native';
+import { Navigator, Image, TouchableOpacity } from 'react-native';
 import Home from './components/Home';
 import Store from './components/Store';
 import Backpack from './components/Backpack';
 
 
 class RouterComponent extends Component {
-
-  constructor(props){
-    super(props);
-    this.state = {
-      loading: true
-    }
-  }
-
-  componentDidMount() {
-    console.log("didMount");
-    this.setState({
-      loading: false
-    });
-  }
 
   render() {
     const routes = [
@@ -66,23 +52,23 @@ class RouterComponent extends Component {
                     case "Home":
                     default:
                       return (
-                        <TouchalbeOpacity onPress={() => {
+                        <TouchableOpacity onPress={() => {
                             navigator.push(routes[2]);
                         }}>
                           <Image
                             source={require('../graphics/icons/backpack_icon.png')}
                             style={styles.navigationIconStyle}
                           />
-                        </TouchalbeOpacity>
+                        </TouchableOpacity>
                       );
                     case "Store":
                       return(
-                        <TouchalbeOpacity onPress={() => navigator.pop()}>
+                        <TouchableOpacity onPress={() => navigator.pop()}>
                           <Image
                             source={require('../graphics/icons/home_icon.png')}
                             style={styles.navigationIconStyle}
                           />
-                        </TouchalbeOpacity>
+                        </TouchableOpacity>
                       );
                     case "Backpack":
                       return null;
@@ -93,25 +79,25 @@ class RouterComponent extends Component {
                     case "Home":
                     default:
                       return (
-                        <TouchalbeOpacity onPress={() => {
+                        <TouchableOpacity onPress={() => {
                             navigator.push(routes[1]);
                         }}>
                           <Image
                             source={require('../graphics/icons/store_icon.png')}
                             style={styles.navigationIconStyle}
                           />
-                        </TouchalbeOpacity>
+                        </TouchableOpacity>
                       );
                     case "Store":
                       return null;
                     case "Backpack":
                       return (
-                        <TouchalbeOpacity onPress={() => navigator.pop()}>
+                        <TouchableOpacity onPress={() => navigator.pop()}>
                           <Image
                             source={require('../graphics/icons/home_icon.png')}
                             style={styles.navigationIconStyle}
                           />
-                        </TouchalbeOpacity>
+                        </TouchableOpacity>
                       );
                 }
               },

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Image, Dimensions } from 'react-native';
 import { Loop, Stage } from 'react-game-kit/native';
 import HitBoxSprite from './common/HitBoxSprite';
+import WellbeingBar from './WellbeingBar';
 
 export default class Home extends Component {
   render() {
@@ -30,6 +31,7 @@ export default class Home extends Component {
                 height: 145
               }}
               />
+              <WellbeingBar style={styles.wellbeingBarStyle}/>
             </Image>
           </Stage>
         </Loop>
@@ -70,6 +72,13 @@ const styles = {
   characterStyle: {
     width: 210,
     height: 185,
-    position: 'relative'
+    position: 'relative',
+    flex:7
+  },
+  wellbeingBarStyle: {
+    height: 166,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end'
   }
 }
