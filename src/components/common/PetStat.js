@@ -43,24 +43,29 @@ export default class PetStat extends Component {
 
     this.onPress = this.onPress.bind(this);
 
+    this.appear = Animated.timing(
+      this.state.fadeAnim,
+      {toValue: 1}
+    );
+
+    this.disappear = Animated.timing(
+      this.state.fadeAnim,
+      {toValue: 1}
+    );
+
+    this.delayedDisappear = Animated.timing(
+      this.state.fadeAnim,
+      {toValue: 0, delay: 1000}
+    );
 
   }
 
   onPress() {
     if(this.state.fadeAnim._value === 1){
-      Animated.timing(
-        this.state.fadeAnim,
-        {toValue: 0}
-      ).start();
+      this.disappear.start();
     } else {
-      Animated.timing(
-        this.state.fadeAnim,
-        {toValue: 1}
-      ).start(() => {
-        Animated.timing(
-          this.state.fadeAnim,
-          {toValue: 0, delay: 1000}
-        ).start();
+      this.appear.start(() => {
+        this.delayedDisappear.start();
       });
     }
   }

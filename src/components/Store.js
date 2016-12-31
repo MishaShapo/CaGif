@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
-class Home extends Component {
+class Store extends Component {
   render() {
     const { containerStyle, textStyle} = styles;
     return (
@@ -24,4 +24,4 @@ const styles = {
   }
 }
 
-export default Home ;
+export default Store ;
