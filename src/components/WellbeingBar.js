@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import PetStat from './common/PetStat';
+import { PetStat } from './common';
 
 export default class WellbeingBar extends Component {
 

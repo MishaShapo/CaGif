@@ -4,9 +4,9 @@ import {
     View,
     Dimensions
 } from 'react-native';
-import Sprite from './Sprite';
+import {Sprite} from './Sprite';
 
-export default class HitBoxSprite extends Component {
+class HitBoxSprite extends Component {
 
   // static contextTypes = {
   //   loop: PropTypes.object,
@@ -191,3 +191,5 @@ HitBoxSprite.propTypes = {
     height: React.PropTypes.number
   })
 }
+
+export { HitBoxSprite };

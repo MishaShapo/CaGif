@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Animated, View, Text } from 'react-native';
-import Sprite from './Sprite';
+import { Sprite } from './Sprite';
 
-export default class PetStat extends Component {
+class PetStat extends Component {
 
   static propTypes = {
     tileWidth: React.PropTypes.number,
@@ -89,3 +89,5 @@ export default class PetStat extends Component {
     );
   }
 }
+
+export { PetStat };

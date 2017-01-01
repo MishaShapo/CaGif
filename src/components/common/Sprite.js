@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import { View, Image } from 'react-native';
 
-export default class Sprite extends Component {
+class Sprite extends Component {
 
   static propTypes = {
     offset: PropTypes.array,
@@ -152,3 +152,5 @@ export default class Sprite extends Component {
   }
 
 }
+
+export { Sprite };

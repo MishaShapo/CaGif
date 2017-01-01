@@ -3,6 +3,7 @@ import { Navigator, Image, TouchableOpacity } from 'react-native';
 import Home from './components/Home';
 import Store from './components/Store';
 import Backpack from './components/Backpack';
+import LoginForm from './components/LoginForm';
 
 
 class RouterComponent extends Component {
@@ -11,14 +12,15 @@ class RouterComponent extends Component {
     const routes = [
         {title: "Home", index: 0},
         {title: "Store", index: 1},
-        {title: "Backpack", index: 2}
+        {title: "Backpack", index: 2},
+        {title: "Auth", index: 3}
     ];
 
     return(
       <Navigator
-        initialRoute={routes[0]}
+        initialRoute={routes[3]}
         initialRouteStack={routes}
-        renderScene={(route) => {
+        renderScene={(route, navigator) => {
           switch (route.title) {
             case "Home":
             default:
@@ -27,6 +29,8 @@ class RouterComponent extends Component {
               return (<Store />);
             case "Backpack":
               return (<Backpack />);
+            case "Auth":
+              return (<LoginForm navigator={navigator}/>);
           }
         }}
         configureScene={(route, routeStack) => {
@@ -50,7 +54,6 @@ class RouterComponent extends Component {
                 LeftButton: (route,navigator) => {
                   switch (route.title) {
                     case "Home":
-                    default:
                       return (
                         <TouchableOpacity onPress={() => {
                             navigator.push(routes[2]);
@@ -71,13 +74,13 @@ class RouterComponent extends Component {
                         </TouchableOpacity>
                       );
                     case "Backpack":
+                    default:
                       return null;
                   }
                 },
                 RightButton: (route,navigator) => {
                   switch (route.title) {
                     case "Home":
-                    default:
                       return (
                         <TouchableOpacity onPress={() => {
                             navigator.push(routes[1]);
@@ -89,6 +92,7 @@ class RouterComponent extends Component {
                         </TouchableOpacity>
                       );
                     case "Store":
+                    default:
                       return null;
                     case "Backpack":
                       return (

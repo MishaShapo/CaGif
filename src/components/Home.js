@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Image, Dimensions } from 'react-native';
 import { Loop, Stage } from 'react-game-kit/native';
-import HitBoxSprite from './common/HitBoxSprite';
+import {HitBoxSprite} from './common';
 import WellbeingBar from './WellbeingBar';
 
 export default class Home extends Component {
