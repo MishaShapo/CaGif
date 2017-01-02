@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Text, View, Navigator } from 'react-native';
+import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { emailChanged, passwordChanged, loginUser, signUpUser } from '../actions';
 import { Card, CardSection, Input, Button, Spinner } from './common';
@@ -14,8 +14,9 @@ class LoginForm extends Component {
     password: PropTypes.string,
     loading: PropTypes.bool,
     error: PropTypes.string,
-    navigator: PropTypes.instanceOf(Navigator)
+    navigator: PropTypes.object
   }
+
   onEmailChange(text) {
     this.props.emailChanged(text);
   }
@@ -61,15 +62,6 @@ class LoginForm extends Component {
       <Card>
         <CardSection>
           <Input
-          label='Email'
-          placeholder='email@email.com'
-          onChangeText={this.onEmailChange.bind(this)}
-          value={this.props.email}
-          />
-        </CardSection>
-
-        <CardSection>
-          <Input
           secureTextEntry
           label='Password'
           placeholder='password'
@@ -78,11 +70,20 @@ class LoginForm extends Component {
           />
         </CardSection>
 
+        <CardSection>
+          <Input
+          label='Email'
+          placeholder='email@email.com'
+          onChangeText={this.onEmailChange.bind(this)}
+          value={this.props.email}
+          />
+        </CardSection>
+
         <Text style={styles.errorTextStyle}>
           {this.props.error}
         </Text>
 
-        <CardSection>
+        <CardSection style={{height: 55}}>
           {this.renderLoginButton()}
           {this.renderSignInButton()}
         </CardSection>

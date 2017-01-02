@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'react-native';
-import firebase from 'firebase';
+
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
+import firebase from 'firebase';
 import ReduxThunk from 'redux-thunk';
 
 import reducers from './reducers';
