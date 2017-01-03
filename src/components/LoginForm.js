@@ -1,22 +1,24 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { Text, View } from 'react-native';
+import dismissKeyboard from 'dismissKeyboard';
 import { connect } from 'react-redux';
 import { emailChanged, passwordChanged, loginUser, signUpUser } from '../actions';
 import { Card, CardSection, Input, Button, Spinner } from './common';
 
 class LoginForm extends Component {
-  static propTypes = {
-    emailChanged: PropTypes.func,
-    passwordChanged: PropTypes.func,
-    loginUser: PropTypes.func,
-    signUpUser: PropTypes.func,
-    email: PropTypes.string,
-    password: PropTypes.string,
-    loading: PropTypes.bool,
-    error: PropTypes.string,
-    navigator: PropTypes.object
-  }
 
+  constructor(props){
+    super(props);
+
+    this.onEmailChange = this.onEmailChange.bind(this);
+    this.onPasswordChange = this.onPasswordChange.bind(this);
+    this.login = this.login.bind(this);
+    this.signUp = this.signUp.bind(this);
+    this.onFinishedEmail = this.onFinishedEmail.bind(this);
+    this.onFinishedPassword = this.onFinishedPassword.bind(this);
+    this.renderButton = this.renderButton.bind(this);
+
+  }
   onEmailChange(text) {
     this.props.emailChanged(text);
   }
@@ -36,46 +38,61 @@ class LoginForm extends Component {
     this.props.signUpUser({ email, password, navigator });
   }
 
-  renderLoginButton() {
+  onFinishedEmail() {
+    if(this.props.email !== ""){
+      this.refs.Password.focus();
+    }
+  }
+
+  onFinishedPassword() {
+    if(this.props.email !== "" && this.props.password != ""){
+      dismissKeyboard();
+    } else if(this.props.email === "") {
+      this.refs.Email.focus();
+    }
+  }
+
+  renderButton() {
     if (this.props.loading) {
       return <Spinner size='large' />;
     }
     return (
-        <Button onPress={this.login.bind(this)} >
+      <View style={{ flexGrow: 1, height: 120 }}>
+        <Button onPress={this.login}>
           Login
         </Button>
-    );
-  }
-
-  renderSignInButton() {
-    if(!this.props.loading) {
-      return (
-        <Button onPress={this.signUp.bind(this)} >
+        <Button onPress={this.signUp}>
           Sign Up
         </Button>
-      );
-    }
+      </View>
+    );
   }
 
   render() {
     return (
-      <Card>
+      <Card style={{marginTop: 83}}>
         <CardSection>
           <Input
-          secureTextEntry
-          label='Password'
-          placeholder='password'
-          onChangeText={this.onPasswordChange.bind(this)}
-          value={this.props.password}
+          ref="Email"
+          label='Email'
+          placeholder='email@email.com'
+          onChangeText={this.onEmailChange.bind(this)}
+          value={this.props.email}
+          returnKeyType={"next"}
+          onSubmitEditing={this.onFinishedEmail}
           />
         </CardSection>
 
         <CardSection>
           <Input
-          label='Email'
-          placeholder='email@email.com'
-          onChangeText={this.onEmailChange.bind(this)}
-          value={this.props.email}
+          ref="Password"
+          secureTextEntry
+          label='Password'
+          placeholder='password'
+          onChangeText={this.onPasswordChange.bind(this)}
+          value={this.props.password}
+          returnKeyType={"done"}
+          onSubmitEditing={this.onFinishedPassword}
           />
         </CardSection>
 
@@ -83,9 +100,8 @@ class LoginForm extends Component {
           {this.props.error}
         </Text>
 
-        <CardSection style={{height: 55}}>
-          {this.renderLoginButton()}
-          {this.renderSignInButton()}
+        <CardSection style={{ flexDirection: 'column', overflow: 'visible' }}>
+          {this.renderButton()}
         </CardSection>
       </Card>
     );

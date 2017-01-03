@@ -37,10 +37,13 @@ export const loginUser = ({ email, password, navigator }) => {
 export const signUpUser = ({ email, password, navigator }) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_USER });
-
-    firebase.auth().createUserWithEmailAndPassword(email, password)
+    firebase.auth().signInWithEmailAndPassword(email, password)
       .then(user => loginUserSuccess(dispatch, user, navigator))
-      .catch(() => loginUserFail(dispatch));
+      .catch(() => {
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then(user => loginUserSuccess(dispatch, user, navigator))
+          .catch(() => loginUserFail(dispatch));
+      });
   };
 };
 
@@ -49,8 +52,7 @@ const loginUserSuccess = (dispatch, user, navigator) => {
     type: LOGIN_USER_SUCCESS,
     payload: user
   });
-
-  navigator.replace({ title: "Home", index: 0});
+  navigator.replace({ title: "Home" });
 };
 
 const loginUserFail = (dispatch) => {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navigator, Image, TouchableOpacity } from 'react-native';
+import { Navigator, Image, TouchableOpacity, View } from 'react-native';
 import Home from './components/Home';
 import Store from './components/Store';
 import Backpack from './components/Backpack';
@@ -10,27 +10,23 @@ class RouterComponent extends Component {
 
   render() {
     const routes = [
-        {title: "Home", index: 0},
-        {title: "Store", index: 1},
-        {title: "Backpack", index: 2},
-        {title: "Auth", index: 3}
+        {title: "Auth"}
     ];
 
     return(
       <Navigator
-        initialRoute={routes[3]}
+        initialRoute={routes[0]}
         initialRouteStack={routes}
         renderScene={(route, navigator) => {
           switch (route.title) {
             case "Home":
-            default:
-              return (<Home />);
+              return <Home />;
             case "Store":
-              return (<Store />);
+              return <Store />;
             case "Backpack":
-              return (<Backpack />);
+              return <Backpack />;
             case "Auth":
-              return (<LoginForm navigator={navigator}/>);
+              return <LoginForm navigator={navigator} />;
           }
         }}
         configureScene={(route, routeStack) => {
@@ -56,7 +52,9 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
-                            navigator.push(routes[2]);
+                            console.log('current Routes',navigator.getCurrentRoutes());
+                            console.log('navigator',navigator);
+                            navigator.push({title: "Backpack"});
                         }}>
                           <Image
                             source={require('../graphics/icons/backpack_icon.png')}
@@ -74,7 +72,6 @@ class RouterComponent extends Component {
                         </TouchableOpacity>
                       );
                     case "Backpack":
-                    default:
                       return null;
                   }
                 },
@@ -83,7 +80,7 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
-                            navigator.push(routes[1]);
+                            navigator.push({title: "Store"});
                         }}>
                           <Image
                             source={require('../graphics/icons/store_icon.png')}
@@ -92,7 +89,6 @@ class RouterComponent extends Component {
                         </TouchableOpacity>
                       );
                     case "Store":
-                    default:
                       return null;
                     case "Backpack":
                       return (

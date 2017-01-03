@@ -1,36 +1,27 @@
 import React, { Component } from 'react';
-import { TextInput, TouchableWithoutFeedback, Text, View } from 'react-native';
+import { TextInput, Text, View } from 'react-native';
 
-class Input extends Component{
+class Input extends Component {
 
-  assignInput(input){
-    this.input = input;
-  }
+  render() {
+    const { label, value, onChangeText, placeholder, secureTextEntry, returnKeyType, onSubmitEditing } = this.props;
 
-  giveFocus() {
-    console.log('this.giveFocus',this);
-    this.input.focus();
-  }
-
-  render(){
-    const { label, value, onChangeText, placeholder, secureTextEntry } = this.props;
     const { inputStyle, labelStyle, containerStyle } = styles;
 
     return (
-      <TouchableWithoutFeedback style={containerStyle} onPress={this.giveFocus}>
-        <View style={containerStyle}>
+      <View style={containerStyle} onPress={this.onPress}>
           <Text style={labelStyle}>{label}</Text>
           <TextInput
-            ref={(input) => {this.input = input;}}
             secureTextEntry={secureTextEntry}
             placeholder={placeholder}
             autoCorrect={false}
             style={inputStyle}
             value={value}
             onChangeText={onChangeText}
+            returnKeyType={returnKeyType}
+            onSubmitEditing={onSubmitEditing}
           />
-        </View>
-      </TouchableWithoutFeedback>
+      </View>
     );
   }
 }
@@ -53,7 +44,6 @@ const styles = {
     height: 40,
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
     alignItems: 'center'
   }
 };

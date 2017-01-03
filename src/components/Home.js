@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, Dimensions } from 'react-native';
+import { Image, Dimensions, View } from 'react-native';
 import { Loop, Stage } from 'react-game-kit/native';
 import {HitBoxSprite} from './common';
 import WellbeingBar from './WellbeingBar';
@@ -8,6 +8,9 @@ export default class Home extends Component {
   render() {
     const { width, height } = Dimensions.get('window');
     return (
+      <View
+        style={{flex: 1}}
+      >
         <Loop style={styles.loopStyle}>
           <Stage style={styles.stageStyle} width={width} height={height}>
             <Image
@@ -35,6 +38,7 @@ export default class Home extends Component {
             </Image>
           </Stage>
         </Loop>
+      </View>
     );
   }
 
