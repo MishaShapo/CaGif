@@ -5,4 +5,3 @@ export * from './Input';
 export * from './Spinner';
 export * from './HitBoxSprite';
 export * from './Sprite';
-export * from './PetStat';

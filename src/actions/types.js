@@ -10,3 +10,6 @@ export const BACKPACK_FETCH_SUCCESS = 'backpack_fetch_success';
 
 export const STORE_FETCH_SUCCESS = 'store_fetch_success';
 export const STORE_BUY = 'store_buy';
+
+export const UPDATE_WELLBEING_STAT = 'update_wellbeing_stat';
+export const GET_WELLBEING_STATS = 'get_wellbeing_stats';

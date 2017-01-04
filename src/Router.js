@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import { Navigator, Image, TouchableOpacity, View } from 'react-native';
+import { Navigator, Image, TouchableOpacity } from 'react-native';
+import { connect } from 'react-redux';
+import { updateWellbeingStats, getWellbeingStats } from './actions';
+
+
 import Home from './components/Home';
 import Store from './components/Store';
 import Backpack from './components/Backpack';
@@ -7,6 +11,25 @@ import LoginForm from './components/LoginForm';
 
 
 class RouterComponent extends Component {
+
+  constructor(props) {
+    super(props);
+    this.updateStats = this.updateStats.bind(this);
+  }
+
+  componentDidMount(){
+    this.wellbeingTimer = setInterval(this.updateStats,10000);
+  }
+
+  updateStats() {
+    const {happiness, hunger, health, pawPoints } = this.props;
+    this.props.updateWellbeingStats({
+      "happiness": (happiness - 2),
+      "hunger": (hunger - 4),
+      "health": (health - 1),
+      "pawPoints" : (pawPoints + 50)
+    });
+  }
 
   render() {
     const routes = [
@@ -17,12 +40,13 @@ class RouterComponent extends Component {
       <Navigator
         initialRoute={routes[0]}
         initialRouteStack={routes}
+        sceneStyle={{position: 'absolute', left:0,top:0}}
         renderScene={(route, navigator) => {
           switch (route.title) {
             case "Home":
               return <Home />;
             case "Store":
-              return <Store merchandise={[1,2,3,4,56,7,67,8,9,0,0,0,0,0,0,654,988,23,53,46,4256,45]} />;
+              return <Store />;
             case "Backpack":
               return <Backpack />;
             case "Auth":
@@ -32,15 +56,27 @@ class RouterComponent extends Component {
         configureScene={(route, routeStack) => {
           if(routeStack !== undefined){ //From Home to Store/Backpack
             if(route.title === "Store") {
-              return Navigator.SceneConfigs.HorizontalSwipeJump;
+              return {
+                ...Navigator.SceneConfigs.HorizontalSwipeJump,
+                gestures: {}
+              }
             } else {
-              return Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft;
+              return {
+                ...Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft,
+                gestures: {}
+              }
             }
           } else { //From Store/Backpack to Home
             if(route.title === "Store") {
-              return Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft;
+              return {
+                ...Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft,
+                gestures: {}
+              }
             } else {
-              return Navigator.SceneConfigs.HorizontalSwipeJump;
+              return {
+                ...Navigator.SceneConfigs.HorizontalSwipeJump,
+                gestures: {}
+              }
             }
           }
         }}
@@ -121,4 +157,10 @@ const styles = {
   }
 }
 
-export default RouterComponent;
+const mapStateToProps = state => {
+  const { happiness, hunger, health, pawPoints } = state.pet;
+
+  return { happiness, hunger, health, pawPoints };
+};
+
+export default connect(mapStateToProps, { updateWellbeingStats, getWellbeingStats })(RouterComponent);

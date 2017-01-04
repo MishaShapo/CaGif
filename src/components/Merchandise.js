@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, Image } from 'react-native';
+import { Button } from './common';
 import { merchandise } from '@assets/images';
 
 class Merchandise extends Component {
@@ -12,24 +13,42 @@ class Merchandise extends Component {
           source={merchandise[key]}
           style={styles.imageStyle}
         />
-        <Text style={styles.item}>{key}</Text>
-        <Text style={styles.item}>${price}</Text>
+        <Text style={styles.key}>{this.beautifyKey(key)}</Text>
+        <Button style={styles.buttonStyle}>${price} | Buy</Button>
       </View>
     );
+  }
+
+  beautifyKey(key){
+    return key.replace("_", " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
   }
 }
 
 const styles = {
   containerStyle: {
-    width: 100,
-    height: 100,
+    width: 105,
+    height: 160,
     margin: 10,
-    justifyContent: 'center',
-    alignItems: 'center'
+    paddingTop: 5,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(45,134,189,0.7)',
+    borderColor: 'rgba(5,74,149,0.9)',
+    borderRadius: 5,
+    borderWidth: 3
   },
   imageStyle: {
     width: 64,
-    height: 65
+    height: 64,
+    borderRadius: 10,
+    flex: 6
+  },
+  key: {
+    flex: 3,
+    textAlign: 'center'
+  },
+  buttonStyle: {
+    flex: 4
   }
 }
 

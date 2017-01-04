@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Animated, View, Text } from 'react-native';
-import { Sprite } from './Sprite';
+import { connect } from 'react-redux';
+import { getWellbeingStats } from '../actions';
+
+import { Sprite } from './common';
 
 class PetStat extends Component {
 
@@ -8,15 +11,14 @@ class PetStat extends Component {
     tileWidth: React.PropTypes.number,
     tileHeight: React.PropTypes.number,
     src: React.PropTypes.number,
-    statValue: React.PropTypes.node,
-    steps: React.PropTypes.array
+    steps: React.PropTypes.array,
+    statName: React.PropTypes.string
   }
 
   constructor(props){
     super(props);
     const { tileHeight, tileWidth } = props;
     this.state = {
-      statValue: this.props.statValue || "",
       fadeAnim: new Animated.Value(0)
     }
     this.styles = {
@@ -50,7 +52,7 @@ class PetStat extends Component {
 
     this.disappear = Animated.timing(
       this.state.fadeAnim,
-      {toValue: 1}
+      {toValue: 0}
     );
 
     this.delayedDisappear = Animated.timing(
@@ -61,9 +63,10 @@ class PetStat extends Component {
   }
 
   onPress() {
+    this.props.getWellbeingStats();
     if(this.state.fadeAnim._value === 1){
       this.disappear.start();
-    } else {
+    } else if(this.state.fadeAnim._value === 0) {
       this.appear.start(() => {
         this.delayedDisappear.start();
       });
@@ -75,7 +78,7 @@ class PetStat extends Component {
     return (
       <View>
         <Animated.View style={this.styles.statWrapperStyle}>
-          <Text style={this.styles.statStyle}>{this.state.statValue}</Text>
+          <Text style={this.styles.statStyle}>{this.props[this.props.statName]}</Text>
         </Animated.View>
         <TouchableOpacity onPress={this.onPress}>
           <Sprite
@@ -90,4 +93,10 @@ class PetStat extends Component {
   }
 }
 
-export { PetStat };
+const mapStateToProps = state => {
+  const { happiness, hunger, health, pawPoints } = state.pet;
+
+  return { happiness, hunger, health, pawPoints };
+};
+
+export default connect(mapStateToProps, { getWellbeingStats })(PetStat);

@@ -1,4 +1,3 @@
-import firebase from 'firebase';
 
 import {
   STORE_BUY,
