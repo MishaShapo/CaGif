@@ -142,9 +142,6 @@ class HitBoxSprite extends Component {
     const {style} = this.containerStyle;
     const { dx, dy } = gesture;
 
-    // console.log("x0    : ", gesture.x0, " , y0    : ",gesture.y0);
-    // console.log("moveX : ", gesture.moveX, " , moveY : ",gesture.moveY);
-
     const minX = -left;
     const maxX = this.screenDimensions.width-(left+width);
     const minY = -top;

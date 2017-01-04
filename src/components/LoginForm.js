@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { emailChanged, passwordChanged, loginUser, signUpUser } from '../actions';
 import { Card, CardSection, Input, Button, Spinner } from './common';
 
+import TimerMixin from 'react-timer-mixin';
+
 class LoginForm extends Component {
 
   constructor(props){
@@ -19,6 +21,13 @@ class LoginForm extends Component {
     this.renderButton = this.renderButton.bind(this);
 
   }
+
+
+    componentDidMount() {
+        this.onEmailChange("Test@test.com");
+        this.onPasswordChange("password");
+        setTimeout(() => {this.login()}, 500);
+    }
   onEmailChange(text) {
     this.props.emailChanged(text);
   }

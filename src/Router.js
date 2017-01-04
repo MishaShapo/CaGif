@@ -22,7 +22,7 @@ class RouterComponent extends Component {
             case "Home":
               return <Home />;
             case "Store":
-              return <Store />;
+              return <Store merchandise={[1,2,3,4,56,7,67,8,9,0,0,0,0,0,0,654,988,23,53,46,4256,45]} />;
             case "Backpack":
               return <Backpack />;
             case "Auth":
@@ -52,8 +52,6 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
-                            console.log('current Routes',navigator.getCurrentRoutes());
-                            console.log('navigator',navigator);
                             navigator.push({title: "Backpack"});
                         }}>
                           <Image

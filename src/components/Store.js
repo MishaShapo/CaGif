@@ -1,27 +1,60 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { ListView } from 'react-native';
+import { connect } from 'react-redux';
+import { merchandiseFetch } from '../actions';
+
+import Merchandise from './Merchandise';
 
 class Store extends Component {
+
+  componentWillMount() {
+    this.props.merchandiseFetch();
+    this.createDataSource(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.createDataSource(nextProps);
+  }
+
+  createDataSource({ merchandise }) {
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+
+    this.dataSource = ds.cloneWithRows(merchandise);
+  }
+
+  renderRow(item) {
+    return <Merchandise item={item} />;
+  }
   render() {
-    const { containerStyle, textStyle} = styles;
     return (
-      <View style={containerStyle}>
-        <Text style={textStyle}>Store</Text>
-      </View>
+      <ListView contentContainerStyle={styles.list}
+      enableEmptySections
+      dataSource={this.dataSource}
+      renderRow={this.renderRow}
+      pageSize={15}
+      initialListSize={15}
+      />
     );
   }
 }
 
 const styles = {
-  containerStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  textStyle: {
-    fontSize: 18,
-    flex: 1
+  list: {
+        marginTop: 50,
+        flexDirection: 'row',
+        flexWrap: 'wrap'
   }
 }
 
-export default Store ;
+const mapStateToProps = state => {
+
+  let i=0, merchandise = [];
+  for(let key in state.store){
+    merchandise[i++] = {...state.store[key], key};
+  }
+  return { merchandise };
+};
+
+export default connect(mapStateToProps, { merchandiseFetch })(Store);

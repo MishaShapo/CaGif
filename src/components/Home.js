@@ -3,6 +3,7 @@ import { Image, Dimensions, View } from 'react-native';
 import { Loop, Stage } from 'react-game-kit/native';
 import {HitBoxSprite} from './common';
 import WellbeingBar from './WellbeingBar';
+import { sprites, staticImages } from '@assets/images';
 
 export default class Home extends Component {
   render() {
@@ -14,14 +15,14 @@ export default class Home extends Component {
         <Loop style={styles.loopStyle}>
           <Stage style={styles.stageStyle} width={width} height={height}>
             <Image
-              source={require('../../graphics/background_real.png')}
+              source={staticImages.petBackground}
               style={styles.bgStyle}
             >
               <HitBoxSprite
               style = {styles.characterStyle}
               left = {width/2-105}
               top = {height/2-92}
-              src = {require("../../graphics/spritesheets/cat_spritesheet.png")}
+              src = {sprites.petSprite}
               tileWidth = {210}
               tileHeight = {185}
               steps = {[9,9,7,9]}
