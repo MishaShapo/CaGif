@@ -40,7 +40,6 @@ class RouterComponent extends Component {
       <Navigator
         initialRoute={routes[0]}
         initialRouteStack={routes}
-        sceneStyle={{position: 'absolute', left:0,top:0}}
         renderScene={(route, navigator) => {
           switch (route.title) {
             case "Home":

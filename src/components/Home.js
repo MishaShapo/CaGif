@@ -1,11 +1,27 @@
 import React, { Component } from 'react';
-import { Image, Dimensions, View } from 'react-native';
+import { Image, Dimensions, View, Animated } from 'react-native';
 import { Loop, Stage } from 'react-game-kit/native';
+import { connect } from 'react-redux';
+
 import {HitBoxSprite} from './common';
 import WellbeingBar from './WellbeingBar';
 import { sprites, staticImages } from '@assets/images';
 
-export default class Home extends Component {
+class Home extends Component {
+
+  constructor(props){
+    super(props);
+
+    this.state = {
+      animationState: spriteAnimations.IDLE,
+      jumping: false
+    };
+
+    this.getAnimationState = this.getAnimationState.bind(this);
+    this.touchStart = this.touchStart.bind(this);
+    this.touchEnd = this.touchEnd.bind(this);
+  }
+
   render() {
     const { width, height } = Dimensions.get('window');
     return (
@@ -26,8 +42,9 @@ export default class Home extends Component {
               tileWidth = {210}
               tileHeight = {185}
               steps = {[9,9,7,9]}
-              touchStart={(sprite) => this.touchStart(sprite)}
-              touchEnd={ (sprite) => this.touchEnd(sprite)}
+              animationState={this.state.animationState}
+              touchStart={this.touchStart}
+              touchEnd={this.touchEnd}
               hitBox={{
                 left:210/2-55,
                 top:185/2-70,
@@ -43,12 +60,31 @@ export default class Home extends Component {
     );
   }
 
-  touchStart(hbs){
-    hbs.setAnimationState(spriteAnimations.JUMP);
+  getAnimationState(health){
+    if(this.state.jumping){
+      return this.setState({animationState: spriteAnimations.JUMP});
+    } else if( health > 50){
+      return this.setState({animationState: spriteAnimations.IDLE});
+    } else {
+      return this.setState({animationState: spriteAnimations.HURT});
+    }
   }
 
-  touchEnd(hbs){
-    hbs.setAnimationState(spriteAnimations.IDLE);
+  componentWillReceiveProps(nextProps){
+    this.getAnimationState(nextProps.health);
+  }
+
+  touchStart(){
+    this.setState({
+      jumping: true
+    },() => this.getAnimationState(this.props.health));
+
+  }
+
+  touchEnd(){
+    this.setState({
+      jumping: false
+    },() => this.getAnimationState(this.props.health));
   }
 
 }
@@ -81,9 +117,16 @@ const styles = {
     flex:7
   },
   wellbeingBarStyle: {
-    height: 166,
+    height: 84,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end'
+    alignItems: 'flex-start',
+    flex: 1
   }
 }
+
+const mapStateToProps = (state) => {
+  return {...state.pet}
+}
+
+export default connect(mapStateToProps)(Home);

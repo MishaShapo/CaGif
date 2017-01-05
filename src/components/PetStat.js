@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Animated, View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { getWellbeingStats } from '../actions';
+import clamp from 'clamp';
 
 import { Sprite } from './common';
 
@@ -17,14 +18,16 @@ class PetStat extends Component {
 
   constructor(props){
     super(props);
-    const { tileHeight, tileWidth } = props;
+    const { tileHeight, tileWidth, statName, steps } = props;
     this.state = {
-      fadeAnim: new Animated.Value(0)
+      fadeAnim: new Animated.Value(0),
+      animationState: new Animated.Value(props[statName])
     }
+
     this.styles = {
       statStyle : {
         fontSize: 18,
-        alignSelf: 'center'
+        textAlign: 'center'
       },
       statWrapperStyle: {
         borderRadius: Math.min(tileHeight,tileWidth) / 4,
@@ -34,10 +37,11 @@ class PetStat extends Component {
         opacity: this.state.fadeAnim,
         justifyContent:'center',
         marginLeft: 19,
+        zIndex: 1,
         transform: [{
           translateY: this.state.fadeAnim.interpolate({
             inputRange: [0,1],
-            outputRange: [50,10]
+            outputRange: [-60,-120]
           })
         }]
       }
@@ -62,6 +66,10 @@ class PetStat extends Component {
 
   }
 
+  componentWillReceiveProps(nextProps){
+    this.state.animationState.setValue(nextProps[nextProps.statName])
+  }
+
   onPress() {
     this.props.getWellbeingStats();
     if(this.state.fadeAnim._value === 1){
@@ -74,20 +82,27 @@ class PetStat extends Component {
   }
 
   render() {
-    const { tileWidth, tileHeight, src, steps } = this.props;
+    const { tileWidth, tileHeight, src, steps, statName } = this.props;
     return (
       <View>
-        <Animated.View style={this.styles.statWrapperStyle}>
-          <Text style={this.styles.statStyle}>{this.props[this.props.statName]}</Text>
-        </Animated.View>
-        <TouchableOpacity onPress={this.onPress}>
+        <TouchableOpacity onPress={this.onPress} style={{zIndex: 2}}>
           <Sprite
           src={src}
           tileWidth={tileWidth}
           tileHeight={tileHeight}
           steps={steps}
+          state={Math.round(this.state.animationState.interpolate({
+            inputRange: [1,100],
+            outputRange: [0, steps.length-1],
+            extrapolate: 'clamp',
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp'
+          }).__getValue())}
           />
         </TouchableOpacity>
+        <Animated.View style={this.styles.statWrapperStyle}>
+          <Text style={this.styles.statStyle}>{this.props[statName]}</Text>
+        </Animated.View>
       </View>
     );
   }

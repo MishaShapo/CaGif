@@ -1,5 +1,5 @@
 import {
-  STORE_FETCH_SUCCESS
+  STORE_FETCH_SUCCESS,
 } from '../actions/types';
 
 const INTIAL_STATE = {};

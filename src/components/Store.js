@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import { ListView } from 'react-native';
 import { connect } from 'react-redux';
-import { merchandiseFetch } from '../actions';
+import { merchandiseFetch, buyMerchandise } from '../actions';
 
 import Merchandise from './Merchandise';
 
 class Store extends Component {
+
+  constructor(props){
+    super(props);
+    this.renderRow = this.renderRow.bind(this);
+  }
 
   componentWillMount() {
     this.props.merchandiseFetch();
@@ -25,7 +30,12 @@ class Store extends Component {
   }
 
   renderRow(item) {
-    return <Merchandise item={item} />;
+    return (<Merchandise
+    name={item.key}
+    onPress={() => {this.buy(item)}}
+    buttonText={`$${item.price} | Buy`}
+    disabled={(this.props.pawPoints > item.price) ? false : true}
+    />);
   }
   render() {
     return (
@@ -37,6 +47,11 @@ class Store extends Component {
       initialListSize={15}
       />
     );
+  }
+
+  buy(item) {
+    const {key, price } = item;
+    this.props.buyMerchandise(key,price);
   }
 }
 
@@ -54,7 +69,7 @@ const mapStateToProps = state => {
   for(let key in state.store){
     merchandise[i++] = {...state.store[key], key};
   }
-  return { merchandise };
+  return { merchandise, pawPoints: state.pet.pawPoints };
 };
 
-export default connect(mapStateToProps, { merchandiseFetch })(Store);
+export default connect(mapStateToProps, { merchandiseFetch, buyMerchandise })(Store);

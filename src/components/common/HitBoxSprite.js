@@ -18,13 +18,16 @@ class HitBoxSprite extends Component {
     accounting for this with Sprite frame state or using a different wrapper?
 
     This would actually be great to write about in your blog :)
+
+    TODO: So the weird jitter comes from the fact that a touch that starts in a
+    good spot but then ends outside the maxX,maxY,minX,minY boundaries naturally
+    collides, but then since the collides flag is set, it negates the whole
+    gesture so dx/dy aren't added at all and previousLeft/previousTop are left
+    unchanged from when the gesture started.
   */
   constructor(props) {
     super(props);
-    // console.log('constructor props: ',props,"this",this);
-    this.state = {
-      animationState: 0
-    };
+
     this.previousLeft = this.props.left;
     this.previousTop = this.props.top;
     this.screenDimensions = Dimensions.get('window');
@@ -41,10 +44,9 @@ class HitBoxSprite extends Component {
       }
     }
 
-    this.touchStart =  this.props.touchStart && this.props.touchStart.bind(this);
-    this.touchEnd = this.props.touchEnd && this.props.touchEnd.bind(this);
-    this.touchMove = this.props.touchMove && this.props.touchMove.bind(this);
-    this.setAnimationState = this.setAnimationState.bind(this);
+    this._touchStart =  this._touchStart.bind(this);
+    this._touchEnd = this._touchEnd.bind(this);
+    this._touchMove = this._touchMove.bind(this);
 
     this.handleShouldSetPanResponder = this.handleShouldSetPanResponder.bind(this);
     this.handlePanResponderGrant = this.handlePanResponderGrant.bind(this);
@@ -69,7 +71,7 @@ class HitBoxSprite extends Component {
   }
 
   render() {
-    const { src,tileWidth,tileHeight,steps,hitBox } = this.props;
+    const { src,tileWidth,tileHeight,steps,hitBox, animationState } = this.props;
     return (
       <View
         ref={container => this.container = container}
@@ -80,7 +82,7 @@ class HitBoxSprite extends Component {
           tileWidth={tileWidth}
           tileHeight={tileHeight}
           steps={steps}
-          state={this.state.animationState}
+          state={animationState}
           ref={sprite => this.sprite = sprite}
           hitBox={hitBox}
         />
@@ -89,33 +91,27 @@ class HitBoxSprite extends Component {
   }
 
   _touchStart() {
-    if(this.touchStart){
-      this.touchStart(this);
+    if(this.props.touchStart){
+      this.props.touchStart(this);
       this._updateNativeStyles();
     }
   }
 
   _touchEnd() {
-    if(this.touchEnd){
-      this.touchEnd(this,{left: this.previousLeft, top: this.previousTop});
+    if(this.props.touchEnd){
+      this.props.touchEnd(this,{left: this.previousLeft, top: this.previousTop});
       this._updateNativeStyles();
     }
   }
 
   _touchMove(){
-    if(this.touchMove){
-      this.touchMove(this);
+    if(this.props.touchMove){
+      this.props.touchMove(this);
     }
   }
 
   _updateNativeStyles() {
     this.container && this.container.setNativeProps(this.containerStyle);
-  }
-
-  setAnimationState(anim){
-    this.setState({
-      animationState: anim
-    });
   }
 
   handleShouldSetPanResponder( e ) {
@@ -126,7 +122,6 @@ class HitBoxSprite extends Component {
 
     const normalizedX = locationX % tileWidth;
     const normalizedY = locationY % tileHeight;
-    // console.log('normalizedX : ', normalizedX, 'normalizedY',normalizedY);
     return ( normalizedX >= left &&
         normalizedX <= left + width &&
         normalizedY >= top &&
@@ -144,8 +139,8 @@ class HitBoxSprite extends Component {
 
     const minX = -left;
     const maxX = this.screenDimensions.width-(left+width);
-    const minY = -top;
-    const maxY = this.screenDimensions.height-(top+height);
+    const minY = -top + 50;
+    const maxY = this.screenDimensions.height-(top+height) - 70;
     if( this.previousLeft + dx < minX || this.previousLeft + dx > maxX ){
       this.collides.horizontal = true;
     } else {
@@ -164,8 +159,8 @@ class HitBoxSprite extends Component {
   }
 
   handlePanResponderEnd( e, gesture ) {
-    this.previousLeft += gesture.dx;
-    this.previousTop += gesture.dy;
+      this.previousLeft += gesture.dx;
+      this.previousTop += gesture.dy;
     this._touchEnd();
   }
 }
@@ -186,7 +181,8 @@ HitBoxSprite.propTypes = {
     top: React.PropTypes.number,
     width: React.PropTypes.number,
     height: React.PropTypes.number
-  })
+  }),
+  animationState: React.PropTypes.number
 }
 
 export { HitBoxSprite };

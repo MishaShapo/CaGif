@@ -6,21 +6,21 @@ import { merchandise } from '@assets/images';
 class Merchandise extends Component {
 
   render() {
-    const {key, comment, price } = this.props.item;
+    const {name, onPress, buttonText, disabled} = this.props;
     return (
       <View style={styles.containerStyle}>
         <Image
-          source={merchandise[key]}
+          source={merchandise[name]}
           style={styles.imageStyle}
         />
-        <Text style={styles.key}>{this.beautifyKey(key)}</Text>
-        <Button style={styles.buttonStyle}>${price} | Buy</Button>
+        <Text style={styles.key}>{this.beautifyName(name)}</Text>
+        <Button style={styles.buttonStyle} onPress={onPress} disabled={disabled}>{buttonText}</Button>
       </View>
     );
   }
 
-  beautifyKey(key){
-    return key.replace("_", " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  beautifyName(name){
+    return name.replace("_", " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
   }
 }
 
@@ -51,5 +51,6 @@ const styles = {
     flex: 4
   }
 }
+
 
 export default Merchandise;
