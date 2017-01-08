@@ -8,6 +8,7 @@ import Home from './components/Home';
 import Store from './components/Store';
 import Backpack from './components/Backpack';
 import LoginForm from './components/LoginForm';
+import FitnessData from './components/FitnessData'
 
 
 class RouterComponent extends Component {
@@ -33,7 +34,7 @@ class RouterComponent extends Component {
 
   render() {
     const routes = [
-        {title: "Auth"}
+        {title: "FitnessData"}
     ];
 
     return(
@@ -50,6 +51,8 @@ class RouterComponent extends Component {
               return <Backpack />;
             case "Auth":
               return <LoginForm navigator={navigator} />;
+            case "FitnessData":
+              return <FitnessData />
           }
         }}
         configureScene={(route, routeStack) => {
