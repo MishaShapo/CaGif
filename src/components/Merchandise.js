@@ -12,6 +12,7 @@ class Merchandise extends Component {
         <Image
           source={merchandise[name]}
           style={styles.imageStyle}
+          resizeMode={"contain"}
         />
         <Text style={styles.key}>{this.beautifyName(name)}</Text>
         <Button style={styles.buttonStyle} onPress={onPress} disabled={disabled}>{buttonText}</Button>

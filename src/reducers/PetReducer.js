@@ -1,15 +1,14 @@
 import {
   UPDATE_WELLBEING_STATS,
-  GET_WELLBEING_STATS,
   STORE_BUY,
   BACKPACK_PLACE
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  pawPoints: 0,
-  happiness: 100,
+  pawPoints: 2000,
+  health: 100,
   hunger: 100,
-  health: 100
+  mood: 100
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -22,12 +21,9 @@ export default (state = INITIAL_STATE, action) => {
       }
     }
     case BACKPACK_PLACE: {
-      const { key, price  } = action.payload;
+      // const { key, price  } = action.payload;
       return {
-        ...state,
-        hunger: ( (key === 'smoothie') ? 30 : state.hunger + Math.round(Math.sqrt(price))),
-        happiness: ((key === 'smoothie') ? 5 : state.happiness + 10),
-        health: ((key === 'smoothie') ? 4 : state.health + 5)
+        ...state
       }
     }
     case UPDATE_WELLBEING_STATS: {
@@ -37,7 +33,6 @@ export default (state = INITIAL_STATE, action) => {
       }
       return newState;
     }
-    case GET_WELLBEING_STATS:
     default:
       return state;
   }

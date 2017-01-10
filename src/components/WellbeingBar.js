@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 
 import PetStat from './PetStat';
+import { sprites, staticImages } from '@assets/images';
 
 export default class WellbeingBar extends Component {
 
@@ -15,15 +16,15 @@ export default class WellbeingBar extends Component {
         <PetStat
           tileWidth={83}
           tileHeight={83}
-          src={require('../../graphics/spritesheets/happiness_spritesheet.png')}
+          src={sprites.happinessSprite}
           steps={[0,0,0]}
           style={{alignSelf:'flex-end'}}
-          statName={"happiness"}
+          statName={"mood"}
         />
         <PetStat
           tileWidth={83}
           tileHeight={83}
-          src={require('../../graphics/spritesheets/health_spritesheet.png')}
+          src={sprites.healthSprite}
           steps={[0,0,0,0,0]}
           style={{alignSelf:'flex-end'}}
           statName={"health"}
@@ -31,7 +32,7 @@ export default class WellbeingBar extends Component {
         <PetStat
           tileWidth={83}
           tileHeight={83}
-          src={require('../../graphics/spritesheets/hunger_spritesheet.png')}
+          src={sprites.hungerSprite}
           steps={[0,0,0,0]}
           style={{alignSelf:'flex-end'}}
           statName={"hunger"}
@@ -39,7 +40,7 @@ export default class WellbeingBar extends Component {
         <PetStat
           tileWidth={83}
           tileHeight={83}
-          src={require('../../graphics/icons/coin.png')}
+          src={staticImages.coin}
           steps={[0]}
           style={{alignSelf:'flex-end'}}
           statName={"pawPoints"}

@@ -1,7 +1,7 @@
 const sprites = {
   petSprite: require('./spritesheets/cat_spritesheet.png'),
   happinessSprite: require('./spritesheets/happiness_spritesheet.png'),
-  healthSprute: require('./spritesheets/health_spritesheet.png'),
+  healthSprite: require('./spritesheets/health_spritesheet.png'),
   hungerSprite: require('./spritesheets/hunger_spritesheet.png'),
 };
 
@@ -9,7 +9,11 @@ const staticImages = {
   petBackground: require('./background_real.png'),
   homeIcon: require('./icons/home_icon.png'),
   storeIcon: require('./icons/store_icon.png'),
-  backpackIcon: require('./icons/backpack_icon.png')
+  backpackIcon: require('./icons/backpack_icon.png'),
+  coin: require('./icons/coin.png'),
+  healthIcon: require('./icons/health_icon.png'),
+  moodIcon: require('./icons/mood_icon.png'),
+  hungerIcon: require('./icons/hunger_icon.png')
 };
 
 const merchandise = {

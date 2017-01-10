@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Animated, View, Text } from 'react-native';
 import { connect } from 'react-redux';
-import { getWellbeingStats } from '../actions';
 import clamp from 'clamp';
 
 import { Sprite } from './common';
@@ -71,7 +70,6 @@ class PetStat extends Component {
   }
 
   onPress() {
-    this.props.getWellbeingStats();
     if(this.state.fadeAnim._value === 1){
       this.disappear.start();
     } else if(this.state.fadeAnim._value === 0) {
@@ -109,9 +107,9 @@ class PetStat extends Component {
 }
 
 const mapStateToProps = state => {
-  const { happiness, hunger, health, pawPoints } = state.pet;
+  const { mood, hunger, health, pawPoints } = state.pet;
 
-  return { happiness, hunger, health, pawPoints };
+  return { mood, hunger, health, pawPoints };
 };
 
-export default connect(mapStateToProps, { getWellbeingStats })(PetStat);
+export default connect(mapStateToProps, {  })(PetStat);

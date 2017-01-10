@@ -2,8 +2,7 @@
 import { Dimensions } from 'react-native';
 import {
   STORE_BUY,
-  BACKPACK_PLACE,
-  BACKPACK_FETCH_SUCCESS
+  BACKPACK_PLACE
 } from '../actions/types';
 const INITIAL_STATE = {};
 
@@ -41,7 +40,6 @@ export default (state = INITIAL_STATE, action) => {
       newState[key].locations[index].top = Math.floor(Math.random() * (Dimensions.get('window').height-80 - 80 + 1)) + 80;
       return newState;
     }
-    case BACKPACK_FETCH_SUCCESS:
     default:
       return state;
   }

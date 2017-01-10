@@ -34,7 +34,7 @@ class RouterComponent extends Component {
 
   render() {
     const routes = [
-        {title: "FitnessData"}
+        {title: "Auth"}
     ];
 
     return(

@@ -1,6 +1,5 @@
 import {
-  BACKPACK_PLACE,
-  BACKPACK_FETCH_SUCCESS
+  BACKPACK_PLACE
 } from './types';
 
 export const backpackPlace = ({key, price}) => {
@@ -8,10 +7,4 @@ export const backpackPlace = ({key, price}) => {
     type: BACKPACK_PLACE,
     payload: {key, price}
   };
-}
-
-export const backpackFetch = () => {
-  return {
-    type: BACKPACK_FETCH_SUCCESS
-  }
 }

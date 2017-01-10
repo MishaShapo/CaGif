@@ -1,32 +1,38 @@
 import React, { Component } from 'react';
-import { ListView } from 'react-native';
+import { ListView, View } from 'react-native';
 import { connect } from 'react-redux';
-import { merchandiseFetch, buyMerchandise } from '../actions';
+import { buyMerchandise } from '../actions';
 
 import Merchandise from './Merchandise';
+import PurchaseDialog from './PurchaseDialog';
+
+import inventory from '../data/inventory.json';
 
 class Store extends Component {
 
   constructor(props){
     super(props);
     this.renderRow = this.renderRow.bind(this);
+    this.createDataSource = this.createDataSource.bind(this);
+    this.onDecline = this.onDecline.bind(this);
+    this.onAccept = this.onAccept.bind(this);
+
+    this.state = {
+      showModal: false,
+      currentItem: undefined
+    };
   }
 
-  componentWillMount() {
-    this.props.merchandiseFetch();
-    this.createDataSource(this.props);
+  componentWillMount(){
+    this.createDataSource();
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.createDataSource(nextProps);
-  }
-
-  createDataSource({ merchandise }) {
+  createDataSource() {
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
     });
 
-    this.dataSource = ds.cloneWithRows(merchandise);
+    this.dataSource = ds.cloneWithRows(inventory);
   }
 
   renderRow(item) {
@@ -34,42 +40,58 @@ class Store extends Component {
     name={item.key}
     onPress={() => {this.buy(item)}}
     buttonText={`$${item.price} | Buy`}
-    disabled={(this.props.pawPoints > item.price) ? false : true}
+    disabled={(this.props.pawPoints >= item.price) ? false : true}
     />);
   }
   render() {
     return (
-      <ListView contentContainerStyle={styles.list}
-      enableEmptySections
-      dataSource={this.dataSource}
-      renderRow={this.renderRow}
-      pageSize={15}
-      initialListSize={15}
-      />
+      <View>
+        <ListView contentContainerStyle={styles.list}
+        enableEmptySections
+        dataSource={this.dataSource}
+        renderRow={this.renderRow}
+        pageSize={12}
+        initialListSize={12}
+        />
+        <PurchaseDialog
+          visible={this.state.showModal}
+          onAccept={this.onAccept}
+          onDecline={this.onDecline}
+          item={this.state.currentItem}
+        />
+      </View>
     );
   }
 
+  onDecline() {
+    this.setState({ showModal: false, currentItem: undefined });
+  }
+
+  onAccept() {
+    if(this.state.currentItem){
+      this.props.buyMerchandise(this.state.currentItem);
+    }
+  }
+
   buy(item) {
-    const {key, price } = item;
-    this.props.buyMerchandise(key,price);
+    this.setState({showModal: true, currentItem: item});
   }
 }
 
 const styles = {
   list: {
         marginTop: 50,
+        justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap'
   }
 }
 
 const mapStateToProps = state => {
-
-  let i=0, merchandise = [];
-  for(let key in state.store){
-    merchandise[i++] = {...state.store[key], key};
-  }
-  return { merchandise, pawPoints: state.pet.pawPoints };
+  return {
+    pawPoints: state.pet.pawPoints,
+    backpack: state.backpack
+  };
 };
 
-export default connect(mapStateToProps, { merchandiseFetch, buyMerchandise })(Store);
+export default connect(mapStateToProps, { buyMerchandise })(Store);

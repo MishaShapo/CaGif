@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ListView } from 'react-native';
 import { connect } from 'react-redux';
-import { backpackPlace, backpackFetch } from '../actions';
+import { backpackPlace } from '../actions';
 
 import Merchandise from './Merchandise';
 
@@ -13,7 +13,6 @@ class Backpack extends Component {
   }
 
   componentWillMount() {
-    this.props.backpackFetch();
     this.createDataSource(this.props);
   }
 
@@ -33,7 +32,7 @@ class Backpack extends Component {
     return (<Merchandise
     name={item.key}
     onPress={() => {this.place(item)}}
-    buttonText={`${item.quantity} left | Place`}
+    buttonText={`${item.quantity} left Place`}
     disabled={(item.quantity > 0) ? false : true}
     />);
   }
@@ -66,9 +65,11 @@ const styles = {
 const mapStateToProps = state => {
   let i=0, inventory = [];
   for(let key in state.backpack){
-    inventory[i++] = {...state.backpack[key], key};
+    if(state.backpack[key].quantity > 0){
+      inventory[i++] = {...state.backpack[key], key};
+    }
   }
   return { inventory };
 };
 
-export default connect(mapStateToProps, { backpackFetch, backpackPlace })(Backpack);
+export default connect(mapStateToProps, { backpackPlace })(Backpack);
