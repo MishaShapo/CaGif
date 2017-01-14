@@ -1,44 +1,58 @@
+import {Dimensions} from 'react-native';
 
-import { Dimensions } from 'react-native';
 import {
   STORE_BUY,
-  BACKPACK_PLACE
+  BACKPACK_PLACE,
+  CONSUME_ITEM
 } from '../actions/types';
 const INITIAL_STATE = {};
 
 export default (state = INITIAL_STATE, action) => {
+  const {width, height} = Dimensions.get('window');
   switch(action.type){
     case STORE_BUY:{
-      const { key, price } = action.payload;
-      const newState = { ...state };
-      if(key in state){
-        newState[key].quantity = state[key].quantity + 1;
-        newState[key].locations.push({
-          id: state[key].quantity + 1,
+      const { key } = action.payload;
+      const newState = { ...state};
+      if(state[key]){
+        newState[key].quantity++;
+        newState[key].items.push({
+          id: Date.now(),
           left: null,
           top: null
         });
       } else {
         newState[key] = {
-          price,
           quantity: 1,
-          locations: [{
-            id: 1,
-            left: null,
-            top: null
-          }]
+          items: [
+            {
+              id: Date.now(),
+              left: null,
+              top: null
+            }
+          ]
         }
       }
       return newState;
     }
-    case BACKPACK_PLACE: {
-      const {key} = action.payload;
-      const newState = { ...state};
-      newState[key].quantity = state[key].quantity - 1;
-      const index = newState[key].locations.findIndex( loc => loc.left === null);
-      newState[key].locations[index].left =  Math.floor(Math.random() * (Dimensions.get('window').width-80 - 80 + 1)) + 80;
-      newState[key].locations[index].top = Math.floor(Math.random() * (Dimensions.get('window').height-80 - 80 + 1)) + 80;
+    case CONSUME_ITEM: {
+      const { key, id } = action.payload;
+      const newState = {...state};
+      const consumedIndex = newState[key].items.findIndex((element) => element.id === id);
+      newState[key].items.splice(consumedIndex,1);
       return newState;
+    }
+    case BACKPACK_PLACE: {
+      const  { key } = action.payload;
+      const newState = { ...state};
+      if(newState[key].quantity >= 1){
+        newState[key].quantity--;
+        const nextToPlace = newState[key].items.find((element) => element.left === null);
+        nextToPlace.left = Math.floor(Math.random()*(width - 60 - 60 +1)+60);
+        nextToPlace.top = Math.floor(Math.random()*(height - 60 - 60 +1)+60);
+        return newState;
+      }
+
+      return state;
     }
     default:
       return state;

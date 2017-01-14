@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Image, Dimensions, View, Animated } from 'react-native';
+import { Image, Dimensions, View } from 'react-native';
 import { Loop, Stage } from 'react-game-kit/native';
 import { connect } from 'react-redux';
 
 import {HitBoxSprite} from './common';
 import WellbeingBar from './WellbeingBar';
-import { sprites, staticImages } from '@assets/images';
+import { sprites, staticImages, merchandise } from '@assets/images';
+import { consumeItem, resetChangeStats } from '../actions';
 
 class Home extends Component {
 
@@ -14,16 +15,23 @@ class Home extends Component {
 
     this.state = {
       animationState: spriteAnimations.IDLE,
-      jumping: false
+      dragging: false
     };
 
     this.getAnimationState = this.getAnimationState.bind(this);
     this.touchStart = this.touchStart.bind(this);
     this.touchEnd = this.touchEnd.bind(this);
+    this.renderBackpackItems = this.renderBackpackItems.bind(this);
+    this.collidesWithMainSprite = this.collidesWithMainSprite.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps){
+      this.getAnimationState(nextProps.stats.health);
   }
 
   render() {
     const { width, height } = Dimensions.get('window');
+    const { mood, health, hunger, pawPoints} = this.props.stats;
     return (
       <View
         style={{flex: 1}}
@@ -35,6 +43,7 @@ class Home extends Component {
               style={styles.bgStyle}
             >
               <HitBoxSprite
+              ref="mainSprite"
               style = {styles.characterStyle}
               left = {width/2-105}
               top = {height/2-92}
@@ -52,7 +61,11 @@ class Home extends Component {
                 height: 145
               }}
               />
-              <WellbeingBar style={styles.wellbeingBarStyle}/>
+              {this.renderBackpackItems()}
+              <WellbeingBar
+                style={styles.wellbeingBarStyle}
+                stats={this.getStats()}
+              />
             </Image>
           </Stage>
         </Loop>
@@ -60,9 +73,18 @@ class Home extends Component {
     );
   }
 
+  getStats(){
+    const displayStats = {};
+    const { statsChanges, stats } = this.props;
+    for(let i in statsChanges){
+      displayStats[i] = (statsChanges[i] === 0) ? stats[i] : statsChanges[i]
+    }
+    return displayStats;
+  }
+
   getAnimationState(health){
-    if(this.state.jumping){
-      return this.setState({animationState: spriteAnimations.JUMP});
+    if(this.state.dragging){
+      return this.setState({animationState: spriteAnimations.WALK});
     } else if( health > 50){
       return this.setState({animationState: spriteAnimations.IDLE});
     } else {
@@ -70,21 +92,78 @@ class Home extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps){
-    this.getAnimationState(nextProps.health);
-  }
-
   touchStart(){
     this.setState({
-      jumping: true
-    },() => this.getAnimationState(this.props.health));
+      dragging: true
+    },() => this.getAnimationState(this.props.stats.health));
 
   }
 
   touchEnd(){
+    this.checkCollision();
     this.setState({
-      jumping: false
-    },() => this.getAnimationState(this.props.health));
+      dragging: false
+    },() => this.getAnimationState(this.props.stats.health));
+  }
+
+  checkCollision(item) {
+    if(item){
+      if(this.collidesWithMainSprite(item.id)){
+        this.props.consumeItem(item);
+        setTimeout(() => {
+          this.props.resetChangeStats({
+            key: item.key,
+            stats: {
+              ...this.props.statsChanges
+            }
+          })
+        }, 2200);
+      }
+    } else {
+      const {backpack} = this.props;
+      for(let key in backpack){
+        const item = backpack[key];
+        if(this.collidesWithMainSprite(item.id)){
+          this.props.consumeItem(item);
+          setTimeout(() => {
+            this.props.resetChangeStats({
+              key: item.key,
+              stats: {
+                ...this.props.statsChanges
+              }
+            })
+          }, 2200);
+        }
+      }
+    }
+  }
+
+  collidesWithMainSprite(id) {
+    const { previousLeft:spriteLeft, previousTop:spriteTop } = this.refs["mainSprite"];
+    const { previousLeft:itemLeft, previousTop:itemTop } = this.refs[id];
+    const { left: hbLeft, top: hbTop, width: hbWidth, height: hbHeight} = this.refs["mainSprite"].props.hitBox;
+    return (
+      (itemTop >= spriteTop + hbTop) && (itemTop <= spriteTop + hbTop + hbHeight) &&
+      (itemLeft >= spriteLeft + hbLeft) && (itemLeft <= spriteLeft + hbLeft + hbWidth)
+    );
+  }
+
+  renderBackpackItems(){
+    return this.props.backpack.map((item) => {
+      return (
+        <HitBoxSprite
+        ref={item.id}
+        key={item.id}
+        style = {styles.backpackItemStyle}
+        left = {item.location.left}
+        top = {item.location.top}
+        src = {merchandise[item.key]}
+        steps = {[0]}
+        touchEnd = {() => {this.checkCollision(item)}}
+        />
+      );
+    });
+
   }
 
 }
@@ -105,28 +184,41 @@ const styles = {
     position: 'relative'
   },
   bgStyle: {
-    // flex: 1,
-    position: 'relative',
-    // alignItems: 'center',
-    // justifyContent: 'center'
+    position: 'relative'
   },
   characterStyle: {
     width: 210,
     height: 185,
-    position: 'relative',
-    flex:7
+    position: 'relative'
+  },
+  backpackItemStyle: {
+    position: 'absolute',
+    width: 64,
+    height: 64
   },
   wellbeingBarStyle: {
-    height: 84,
+    height: 55 ,
+    width: Dimensions.get('window').width,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    flex: 1
+    justifyContent: 'space-around',
+    alignItems: 'flex-end',
+    position: 'absolute',
+    top: Dimensions.get('window').height - 55
   }
 }
 
 const mapStateToProps = (state) => {
-  return {...state.pet}
+  const arr = [];
+  for( const key in state.backpack){
+    const { items } = state.backpack[key];
+    for( const index in items){
+      if(items[index].left !== null){
+        arr.push({ key, id: items[index].id, location: {left: items[index].left, top: items[index].top }})
+      }
+    }
+  }
+
+  return {...state.pet, backpack: arr}
 }
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps,{ consumeItem, resetChangeStats })(Home);

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { View } from 'react-native';
 
 import PetStat from './PetStat';
@@ -7,43 +7,46 @@ import { sprites, staticImages } from '@assets/images';
 export default class WellbeingBar extends Component {
 
   static propTypes = {
-    style: React.PropTypes.object
+    style: PropTypes.object,
+    stats: PropTypes.object,
   }
 
   render() {
+    const { stats,style } = this.props;
+
     return (
-      <View style={{...this.props.style}}>
+      <View style={style}>
         <PetStat
-          tileWidth={83}
-          tileHeight={83}
-          src={sprites.happinessSprite}
+          tileWidth={44}
+          tileHeight={44}
+          src={sprites.moodSprite}
           steps={[0,0,0]}
-          style={{alignSelf:'flex-end'}}
-          statName={"mood"}
+          statKey={"mood"}
+          value={stats.mood}
         />
         <PetStat
-          tileWidth={83}
-          tileHeight={83}
+          tileWidth={50}
+          tileHeight={46}
           src={sprites.healthSprite}
           steps={[0,0,0,0,0]}
-          style={{alignSelf:'flex-end'}}
-          statName={"health"}
+          statKey={"health"}
+          value={stats.health}
         />
         <PetStat
-          tileWidth={83}
-          tileHeight={83}
+          tileWidth={56}
+          tileHeight={40}
           src={sprites.hungerSprite}
           steps={[0,0,0,0]}
-          style={{alignSelf:'flex-end'}}
-          statName={"hunger"}
+          statKey={"hunger"}
+          value={stats.hunger}
         />
         <PetStat
-          tileWidth={83}
-          tileHeight={83}
+          tileWidth={52}
+          tileHeight={50}
           src={staticImages.coin}
           steps={[0]}
-          style={{alignSelf:'flex-end'}}
-          statName={"pawPoints"}
+          statKey={"pawPoints"}
+          value={stats.pawPoints}
         />
       </View>
     );

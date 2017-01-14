@@ -1,9 +1,9 @@
 import React, { PropTypes, Component} from 'react';
-import { Text, View, Modal, Image } from 'react-native';
+import { Text, View, Modal } from 'react-native';
 import { connect } from 'react-redux';
 
 import { CardSection, Button } from './common';
-import { staticImages } from '@assets/images';
+import StatChangeBar from './StatChangeBar';
 
 class PurchaseDialog extends Component {
 
@@ -16,24 +16,20 @@ class PurchaseDialog extends Component {
     const {
       containerStyle,
       cardSectionStyle,
-      statsWrapperStyle,
-      progressStyle,
-      barStyle,
       textStyle
     } = styles;
     const {
-      item={mood:0,health:0,hunger:0,price:0,key:""},
+      item,
       visible,
       onAccept,
       onDecline,
       pawPoints
     } = this.props;
-    const {mood, health, hunger, price,key} = item;
+    const {statsChanges, price, key} = item;
     const prettyKey =
       key.replace("_", " ").replace(/\w\S*/g,
         function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
       ;});
-
     return(
         <Modal
           animationType='slide'
@@ -43,59 +39,9 @@ class PurchaseDialog extends Component {
         >
           <View style={containerStyle}>
             <CardSection style={cardSectionStyle}>
-              <View style={statsWrapperStyle}>
-                <Image
-                  source={staticImages.moodIcon}
-                />
-                <View style={[progressStyle, {borderColor: (mood < 0) ? '#e04435' : 'limegreen'}]}>
-                  <View
-                    style={[barStyle,{
-                      width: Math.abs(mood) * 2,
-                    }]}
-                    backgroundColor={(mood < 0) ? '#e04435' : 'limegreen'}
-                  />
-                  <Text style={[textStyle,{
-                    left: (Math.abs(mood) * 2 < 160) ? Math.abs(mood) * 2 : Math.abs(mood) * 2 - 40,
-                    fontWeight: 'bold'
-                  }]}>{((mood < 0) ? "-" : "+") + Math.abs(mood)}</Text>
-                </View>
-              </View>
-
-              <View style={statsWrapperStyle}>
-                <Image
-                  source={staticImages.healthIcon}
-                />
-                <View style={[progressStyle, {borderColor: (health < 0) ? '#e04435' : 'limegreen'}]}>
-                  <View
-                    style={[barStyle,{
-                      width: Math.abs(health) * 2,
-                    }]}
-                    backgroundColor={(health < 0) ? '#e04435' : 'limegreen'}
-                  />
-                  <Text style={[textStyle,{
-                    left: (Math.abs(health) * 2 < 160) ? Math.abs(health) * 2 : Math.abs(health) * 2 - 40,
-                    fontWeight: 'bold'
-                  }]}>{((health < 0) ? "-" : "+") + Math.abs(health)}</Text>
-                </View>
-              </View>
-
-              <View style={statsWrapperStyle}>
-                <Image
-                  source={staticImages.hungerIcon}
-                />
-                <View style={[progressStyle, {borderColor: (hunger < 0) ? '#e04435' : 'limegreen'}]}>
-                  <View
-                    style={[barStyle,{
-                      width: Math.abs(hunger) * 2,
-                    }]}
-                    backgroundColor={(hunger < 0) ? '#e04435' : 'limegreen'}
-                  />
-                  <Text style={[textStyle,{
-                    left: (Math.abs(hunger) * 2 < 160) ? Math.abs(hunger) * 2 : Math.abs(hunger) * 2 - 40,
-                    fontWeight: 'bold'
-                  }]}>{((hunger < 0) ? "-" : "+") + Math.abs(hunger)}</Text>
-                </View>
-              </View>
+              {Object.entries(statsChanges).map((kvPair) => (
+                <StatChangeBar stat={kvPair[1]} key={kvPair[0]} />
+              ))}
 
               <Text style={[textStyle,{marginVertical : 10}]}>
                 You have <Text style={{fontWeight: 'bold'}}>{pawPoints}</Text> PawPoints
@@ -104,14 +50,15 @@ class PurchaseDialog extends Component {
                 A {prettyKey} costs <Text style={{fontWeight: 'bold'}}>{price}</Text> PawPoints
               </Text>
               <Text style={[textStyle,{marginVertical : 10}]}>
-                You have <Text style={{fontWeight: 'bold'}}>{this.getOwned()}</Text> {prettyKey}s in your Backpack
+                You have <Text style={{fontWeight: 'bold'}}>{this.getOwned() + " "}</Text>
+                {prettyKey}{(this.getOwned() !== 1) ? "s" : ""} in your Backpack
               </Text>
 
             </CardSection>
 
             <CardSection style={cardSectionStyle}>
-              <Button onPress={onAccept}>Buy</Button>
-              <Button onPress={onDecline}>Cancel</Button>
+              <Button onPress={onAccept} disabled={(pawPoints < price)}>Buy</Button>
+              <Button onPress={onDecline}>Done</Button>
             </CardSection>
           </View>
       </Modal>
@@ -139,47 +86,31 @@ PurchaseDialog.propTypes = {
   backpack: PropTypes.object
 }
 
+PurchaseDialog.defaultProps = {
+  item: {statsChanges:{}, key:"", price: Infinity}
+}
+
 const styles = {
   cardSectionStyle: {
     justifyContent: 'center',
     flexDirection: 'column'
-  },
-  statsWrapperStyle: {
-    flexDirection: 'row'
-  },
-  textStyle: {
-    alignSelf: 'center',
-    backgroundColor: 'transparent',
-    fontSize: 18,
-    color: 'black'
-  },
-  progressStyle: {
-    position: 'relative',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 3,
-    width: 200,
-    height: 40,
-    alignSelf: 'center',
-    overflow: 'hidden',
-    flexDirection: 'row'
-  },
-  barStyle: {
-    position: 'absolute',
-    height: 40,
-    justifyContent: 'center'
   },
   containerStyle: {
     backgroundColor: 'rgba(0,0,0,0.75)',
     position: 'relative',
     flex: 1,
     justifyContent: 'center'
+  },
+  textStyle: {
+    alignSelf: 'center',
+    backgroundColor: 'transparent',
+    fontSize: 18,
+    color: 'black'
   }
 };
 
 const mapStateToProps = (state) => {
-  return { ...state.pet, backpack: state.backpack};
+  return { pawPoints: state.pet.stats.pawPoints, backpack: state.backpack};
 };
 
 export default connect(mapStateToProps)(PurchaseDialog);

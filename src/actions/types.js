@@ -9,3 +9,5 @@ export const BACKPACK_PLACE = 'backpack_place';
 export const STORE_BUY = 'store_buy';
 
 export const UPDATE_WELLBEING_STATS = 'update_wellbeing_stats';
+export const CONSUME_ITEM = 'consume_item';
+export const RESET_CHANGE_STATS = 'reset_change_stats';

@@ -1,6 +1,6 @@
 const sprites = {
   petSprite: require('./spritesheets/cat_spritesheet.png'),
-  happinessSprite: require('./spritesheets/happiness_spritesheet.png'),
+  moodSprite: require('./spritesheets/mood_spritesheet.png'),
   healthSprite: require('./spritesheets/health_spritesheet.png'),
   hungerSprite: require('./spritesheets/hunger_spritesheet.png'),
 };

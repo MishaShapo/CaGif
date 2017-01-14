@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Navigator, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-import { updateWellbeingStats, getWellbeingStats } from './actions';
+import { updateWellbeingStats } from './actions';
 
 
 import Home from './components/Home';
@@ -19,13 +19,13 @@ class RouterComponent extends Component {
   }
 
   componentDidMount(){
-    this.wellbeingTimer = setInterval(this.updateStats,10000);
+    // this.wellbeingTimer = setInterval(this.updateStats,10000);
   }
 
   updateStats() {
-    const {happiness, hunger, health, pawPoints } = this.props;
+    const {mood, hunger, health, pawPoints } = this.props;
     this.props.updateWellbeingStats({
-      "happiness": (happiness - 2),
+      "mood": (mood - 2),
       "hunger": (hunger - 4),
       "health": (health - 1),
       "pawPoints" : (pawPoints + 50)
@@ -160,9 +160,9 @@ const styles = {
 }
 
 const mapStateToProps = state => {
-  const { happiness, hunger, health, pawPoints } = state.pet;
+  const { mood, hunger, health, pawPoints } = state.pet.stats;
 
-  return { happiness, hunger, health, pawPoints };
+  return { mood, hunger, health, pawPoints };
 };
 
-export default connect(mapStateToProps, { updateWellbeingStats, getWellbeingStats })(RouterComponent);
+export default connect(mapStateToProps, { updateWellbeingStats })(RouterComponent);

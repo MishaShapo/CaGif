@@ -1,59 +1,67 @@
 
-[
-    {
-      "key": "banana",
+{
+    "banana" : {
       "price": 30,
-      "health": 5,
-      "hunger": 10,
-      "mood": 3
+      "statsChanges": {
+        "health": 5,
+        "hunger": 10,
+        "mood": 3
+      }
     },
-    {
-      "key": "beet",
+    "beet" : {
       "price": 50,
-      "health": 15,
-      "hunger": 10,
-      "mood": 5
+      "statsChanges": {
+        "health": 15,
+        "hunger": 10,
+        "mood": 5
+      }
     },
-    {
-      "key": "smoothie",
+    "smoothie": {
       "price": 50,
-      "health": 10,
-      "hunger": 5,
-      "mood": 15
+      "statsChanges": {
+        "health": 10,
+        "hunger": 5,
+        "mood": 15
+      }
     },
-    {
-      "key": "zucchini_loaf",
+    "zucchini_loaf": {
       "price": 50,
-      "health": 5,
-      "hunger": 15,
-      "mood": 10
+      "statsChanges": {
+        "health": 5,
+        "hunger": 15,
+        "mood": 10
+      }
     },
-    {
-      "key": "taco",
+    "taco": {
       "price": 80,
-      "health": -10,
-      "hunger": 35,
-      "mood": 25
+      "statsChanges": {
+        "health": -10,
+        "hunger": 35,
+        "mood": 25
+      }
     },
-    {
-      "key": "chocolate_cake",
+    "chocolate_cake": {
       "price": 80,
-      "health": -20,
-      "hunger": 30,
-      "mood": 40
+      "statsChanges": {
+        "health": -20,
+        "hunger": 30,
+        "mood": 40
+      }
     },
-    {
-      "key": "veggie_kebab",
+    "veggie_kebab": {
       "price": 80,
-      "health": 35,
-      "hunger": 20,
-      "mood": -5
+      "statsChanges": {
+        "health": 35,
+        "hunger": 20,
+        "mood": -5
+      }
     },
-    {
-      "key":"salmon",
+    "salmon" : {
       "price": 115,
-      "health": 35,
-      "hunger": 20,
-      "mood": 20
+      "statsChanges": {
+        "health": 35,
+        "hunger": 20,
+        "mood": 20
+      }
     }
-]
+}

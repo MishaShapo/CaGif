@@ -1,38 +1,69 @@
 import {
   UPDATE_WELLBEING_STATS,
   STORE_BUY,
-  BACKPACK_PLACE
+  CONSUME_ITEM,
+  RESET_CHANGE_STATS
 } from '../actions/types';
 
+import inventory from '../data/inventory.json';
+
 const INITIAL_STATE = {
-  pawPoints: 2000,
-  health: 100,
-  hunger: 100,
-  mood: 100
+  stats:{
+    pawPoints: 200,
+    health: 100,
+    hunger: 100,
+    mood: 100
+  },
+  statsChanges: {
+    pawPoints: 0,
+    health: 0,
+    hunger: 0,
+    mood: 0
+  }
+
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch(action.type) {
     case STORE_BUY: {
       const { price } = action.payload;
-      return {
+      const newState = {
         ...state,
-        pawPoints: (state.pawPoints - price)
-      }
+        stats:{
+          ...state.stats,
+          pawPoints: (state.stats.pawPoints - price)
+        }
+      };
+      return newState;
     }
-    case BACKPACK_PLACE: {
-      // const { key, price  } = action.payload;
-      return {
-        ...state
+    case CONSUME_ITEM: {
+      const newState = {...state};
+      const { key } = action.payload;
+      const { statsChanges } = inventory[key];
+      console.log('PetReducer statsChanges : ', statsChanges);
+      for( let stat in statsChanges){
+        if(newState.stats[stat]){
+          newState.statsChanges[stat] = ((statsChanges[stat] > 0) ? "+" : "-") + statsChanges[stat];
+          newState.stats[stat] += statsChanges[stat];
+        }
       }
+      return newState;
+    }
+    case RESET_CHANGE_STATS: {
+      const newState = {...state};
+      for( let key in action.payload.stats){
+        newState.statsChanges[key] = 0
+      }
+      return newState;
     }
     case UPDATE_WELLBEING_STATS: {
       const newState = {...state};
       for( let key in action.payload){
-        newState[key] = action.payload[key];
+        newState.stats[key] = action.payload[key];
       }
       return newState;
     }
+
     default:
       return state;
   }

@@ -49,8 +49,7 @@ class Backpack extends Component {
   }
 
   place(item) {
-    const {key, quantity, locations,price} = item;
-    this.props.backpackPlace({key,price});
+    this.props.backpackPlace(item);
   }
 }
 
@@ -63,10 +62,10 @@ const styles = {
 }
 
 const mapStateToProps = state => {
-  let i=0, inventory = [];
+  let inventory = [];
   for(let key in state.backpack){
     if(state.backpack[key].quantity > 0){
-      inventory[i++] = {...state.backpack[key], key};
+      inventory.push({...state.backpack[key], key});
     }
   }
   return { inventory };

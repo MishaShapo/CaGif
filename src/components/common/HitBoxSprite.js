@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
     PanResponder,
     View,
@@ -8,10 +8,10 @@ import {Sprite} from './Sprite';
 
 class HitBoxSprite extends Component {
 
-  // static contextTypes = {
-  //   loop: PropTypes.object,
-  //   scale: PropTypes.number,
-  // };
+  static contextTypes = {
+    loop: PropTypes.object,
+    scale: PropTypes.number,
+  };
 
   /*TODO: PanResponder is having changing x-values becaue Sprite actually
     switches x values to create the affect of animation so perhaps try
@@ -71,7 +71,7 @@ class HitBoxSprite extends Component {
   }
 
   render() {
-    const { src,tileWidth,tileHeight,steps,hitBox, animationState } = this.props;
+    const { src,tileWidth,tileHeight,steps, hitBox, animationState } = this.props;
     return (
       <View
         ref={container => this.container = container}
@@ -117,6 +117,9 @@ class HitBoxSprite extends Component {
   handleShouldSetPanResponder( e ) {
     //Return whether or not the touch registered in the hitbox
     const { tileWidth, tileHeight, hitBox } = this.props;
+    if(!hitBox){
+      return true;
+    }
     const { left, top, width, height } = hitBox;
     const { locationX, locationY } = e.nativeEvent;
 
@@ -133,8 +136,23 @@ class HitBoxSprite extends Component {
   }
 
   handlePanResponderMove( e, gesture ) {
-    const {left, top, width, height } = this.props.hitBox;
     const {style} = this.containerStyle;
+
+    if(!this.props.hitBox){
+      if( this.previousLeft + gesture.dx > 0 &&
+          this.previousLeft + gesture.dx < this.screenDimensions.width - 20){
+          style.left = this.previousLeft + gesture.dx
+      }
+      if( this.previousTop + gesture.dy > 0 &&
+          this.previousTop + gesture.dy < this.screenDimensions.height - 84){
+          style.top = this.previousTop + gesture.dy
+      }
+      this._touchMove();
+      this._updateNativeStyles();
+      return;
+    }
+    const {left, top, width, height } = this.props.hitBox;
+
     const { dx, dy } = gesture;
 
     const minX = -left;
@@ -184,5 +202,6 @@ HitBoxSprite.propTypes = {
   }),
   animationState: React.PropTypes.number
 }
+
 
 export { HitBoxSprite };

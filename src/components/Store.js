@@ -31,8 +31,8 @@ class Store extends Component {
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
     });
-
-    this.dataSource = ds.cloneWithRows(inventory);
+    //Each row item with have key, price, and statsChanges
+    this.dataSource = ds.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}));
   }
 
   renderRow(item) {
@@ -89,8 +89,7 @@ const styles = {
 
 const mapStateToProps = state => {
   return {
-    pawPoints: state.pet.pawPoints,
-    backpack: state.backpack
+    pawPoints: state.pet.stats.pawPoints
   };
 };
 
