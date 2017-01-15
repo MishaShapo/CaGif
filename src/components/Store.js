@@ -50,7 +50,10 @@ class Store extends Component {
   }
   render() {
     return (
-      <Image source={staticImages.storeBackground} style={styles.bgStyle}>
+      <Image
+        source={staticImages.storeBackground}
+        style={styles.bgStyle}
+        >
         <ListView contentContainerStyle={styles.list}
         enableEmptySections
         dataSource={this.dataSource}
@@ -91,8 +94,7 @@ const styles = {
         flexWrap: 'wrap'
   },
   bgImage: {
-    position: 'relative',
-    flex: 1
+    position: 'relative'
   }
 }
 

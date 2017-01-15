@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { ListView } from 'react-native';
+import { ListView, Image } from 'react-native';
 import { connect } from 'react-redux';
 import { backpackPlace } from '../actions';
 
 import Merchandise from './Merchandise';
+import { staticImages } from '@assets/images';
 
 class Backpack extends Component {
 
@@ -38,15 +39,21 @@ class Backpack extends Component {
   }
   render() {
     return (
-      <ListView
-      contentContainerStyle={styles.list}
-      style={styles.containerStyle}
-      enableEmptySections
-      dataSource={this.dataSource}
-      renderRow={this.renderRow}
-      pageSize={15}
-      initialListSize={15}
-      />
+      <Image
+        source={staticImages.backpackBackground}
+        style={styles.bgImage}
+        resizeMode={"stretch"}
+      >
+        <ListView
+        contentContainerStyle={styles.list}
+        style={styles.containerStyle}
+        enableEmptySections
+        dataSource={this.dataSource}
+        renderRow={this.renderRow}
+        pageSize={15}
+        initialListSize={15}
+        />
+      </Image>
     );
   }
 
@@ -61,8 +68,9 @@ const styles = {
         flexDirection: 'row',
         flexWrap: 'wrap'
   },
-  containerStyle: {
-    backgroundColor: "goldenrod"
+  bgImage: {
+    flex: 1,
+    position: 'relative'
   }
 }
 

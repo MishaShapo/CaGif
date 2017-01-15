@@ -14,8 +14,8 @@ const staticImages = {
   healthIcon: require('./icons/health_icon.png'),
   moodIcon: require('./icons/mood_icon.png'),
   hungerIcon: require('./icons/hunger_icon.png'),
-  storeBackground: require('./bgs/store_bg.png'),
-  backpackBackground: require('./bgs/backpack_bg.png')
+  storeBackground: require('./bgs/simple_store_bg.png'),
+  backpackBackground: require('./bgs/simple_backpack_bg.png')
 };
 
 const merchandise = {
