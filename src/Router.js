@@ -18,23 +18,26 @@ class RouterComponent extends Component {
     this.updateStats = this.updateStats.bind(this);
   }
 
-  componentDidMount(){
-    // this.wellbeingTimer = setInterval(this.updateStats,10000);
-  }
+  // componentDidMount(){
+  //   // this.wellbeingTimer = setInterval(this.updateStats,10000);
+  // }
+  //
+  // componentWillUnmount(){
+  //   // clearInterval(this.wellbeingTimer);
+  // }
 
   updateStats() {
     const {mood, hunger, health, pawPoints } = this.props;
     this.props.updateWellbeingStats({
       "mood": (mood - 2),
       "hunger": (hunger - 4),
-      "health": (health - 1),
-      "pawPoints" : (pawPoints + 50)
+      "health": (health - 1)
     });
   }
 
   render() {
     const routes = [
-        {title: "Auth"}
+        {title: "Home"}
     ];
 
     return(

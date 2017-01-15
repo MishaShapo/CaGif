@@ -27,8 +27,12 @@ class PetStat extends Component {
       textColor: "#111",
       dirty: false
     }
+    if(this.props.onPress === undefined){
+      this.onPress = this.onPress.bind(this);
+    } else {
+      this.onPress = this.props.onPress;
+    }
 
-    this.onPress = this.onPress.bind(this);
 
     this.appear = Animated.timing(
       this.state.fadeAnim,

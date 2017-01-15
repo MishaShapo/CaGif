@@ -47,6 +47,7 @@ export default class WellbeingBar extends Component {
           steps={[0]}
           statKey={"pawPoints"}
           value={stats.pawPoints}
+          onPress={this.props.cashInModal}
         />
       </View>
     );

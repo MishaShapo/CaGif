@@ -38,7 +38,9 @@ class Backpack extends Component {
   }
   render() {
     return (
-      <ListView contentContainerStyle={styles.list}
+      <ListView
+      contentContainerStyle={styles.list}
+      style={styles.containerStyle}
       enableEmptySections
       dataSource={this.dataSource}
       renderRow={this.renderRow}
@@ -55,9 +57,12 @@ class Backpack extends Component {
 
 const styles = {
   list: {
-        marginTop: 50,
+        marginTop: 55,
         flexDirection: 'row',
         flexWrap: 'wrap'
+  },
+  containerStyle: {
+    backgroundColor: "goldenrod"
   }
 }
 

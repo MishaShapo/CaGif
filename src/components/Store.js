@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { ListView, View } from 'react-native';
+import { ListView, Image } from 'react-native';
 import { connect } from 'react-redux';
 import { buyMerchandise } from '../actions';
 
 import Merchandise from './Merchandise';
 import PurchaseDialog from './PurchaseDialog';
+import { staticImages } from '@assets/images';
 
 import inventory from '../data/inventory.json';
 
@@ -21,31 +22,35 @@ class Store extends Component {
       showModal: false,
       currentItem: undefined
     };
+
+    this.ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+
+    this.dataSource = this.ds.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}));
   }
 
-  componentWillMount(){
+  componentWillReceiveProps(){
     this.createDataSource();
   }
 
   createDataSource() {
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
-    });
     //Each row item with have key, price, and statsChanges
-    this.dataSource = ds.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}));
+    this.dataSource = this.ds.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}));
   }
 
   renderRow(item) {
+    console.log('renderRow pp<price: ', this.props.pawPoints < item.price, " key: ", item.key)
     return (<Merchandise
     name={item.key}
     onPress={() => {this.buy(item)}}
     buttonText={`$${item.price} | Buy`}
-    disabled={(this.props.pawPoints >= item.price) ? false : true}
+    disabled={this.props.pawPoints < item.price}
     />);
   }
   render() {
     return (
-      <View>
+      <Image source={staticImages.storeBackground} style={styles.bgStyle}>
         <ListView contentContainerStyle={styles.list}
         enableEmptySections
         dataSource={this.dataSource}
@@ -59,7 +64,7 @@ class Store extends Component {
           onDecline={this.onDecline}
           item={this.state.currentItem}
         />
-      </View>
+      </Image>
     );
   }
 
@@ -80,10 +85,14 @@ class Store extends Component {
 
 const styles = {
   list: {
-        marginTop: 50,
+        marginTop: 55,
         justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap'
+  },
+  bgImage: {
+    position: 'relative',
+    flex: 1
   }
 }
 

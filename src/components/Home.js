@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { Image, Dimensions, View } from 'react-native';
+import { Image, Dimensions, View, NativeAppEventEmitter } from 'react-native';
 import { Loop, Stage } from 'react-game-kit/native';
 import { connect } from 'react-redux';
 
 import {HitBoxSprite} from './common';
 import WellbeingBar from './WellbeingBar';
+import CashInModal from './CashInModal';
 import { sprites, staticImages, merchandise } from '@assets/images';
-import { consumeItem, resetChangeStats } from '../actions';
+import { consumeItem, resetChangeStats, cashInSteps, updateStepCount } from '../actions';
+import Health from '../services/health';
 
 class Home extends Component {
 
@@ -15,7 +17,8 @@ class Home extends Component {
 
     this.state = {
       animationState: spriteAnimations.IDLE,
-      dragging: false
+      dragging: false,
+      showModal: false
     };
 
     this.getAnimationState = this.getAnimationState.bind(this);
@@ -23,6 +26,29 @@ class Home extends Component {
     this.touchEnd = this.touchEnd.bind(this);
     this.renderBackpackItems = this.renderBackpackItems.bind(this);
     this.collidesWithMainSprite = this.collidesWithMainSprite.bind(this);
+    this.cashInModal = this.cashInModal.bind(this);
+    this.onDecline = this.onDecline.bind(this);
+    this.onAccept = this.onAccept.bind(this);
+  }
+
+  componentWillMount(){
+    this.subscription = NativeAppEventEmitter.addListener(
+      'StepStats',
+      (steps) => {
+        if(steps.error){
+          console.log('Error with native event listener :', steps.error);
+        }else {
+          console.log('StepStats handler',steps);
+          this.props.updateStepCount(steps.value);
+        }
+
+      }
+    );
+    Health();
+  }
+
+  componentWillUnmount(){
+    this.subscription.remove();
   }
 
   componentWillReceiveProps(nextProps){
@@ -31,7 +57,8 @@ class Home extends Component {
 
   render() {
     const { width, height } = Dimensions.get('window');
-    const { mood, health, hunger, pawPoints} = this.props.stats;
+    const { stats, steps } = this.props;
+    const { mood, health, hunger, pawPoints} = stats;
     return (
       <View
         style={{flex: 1}}
@@ -65,6 +92,14 @@ class Home extends Component {
               <WellbeingBar
                 style={styles.wellbeingBarStyle}
                 stats={this.getStats()}
+                cashInModal={this.cashInModal}
+              />
+              <CashInModal
+                pawPoints={pawPoints}
+                steps={steps}
+                visible={this.state.showModal}
+                onAccept={this.onAccept}
+                onDecline={this.onDecline}
               />
             </Image>
           </Stage>
@@ -110,6 +145,16 @@ class Home extends Component {
     if(item){
       if(this.collidesWithMainSprite(item.id)){
         this.props.consumeItem(item);
+        /*
+          This resets the statsChanges object in the pet stat all at the same time.
+          I have to do it here, because the update has to come from a centralized
+          location in order to keep the individual PetStat components in sync.
+          And since I don't have a handler on the animation completion from the
+          PetStat component and anyway each one finishes at a different time, so
+          I reasoned it was just better to reset the statsChanges property after
+          a reasonable period of time when all of the animations should have finished.
+          I am not concerned about millisecond accuracy for this.
+        */
         setTimeout(() => {
           this.props.resetChangeStats({
             key: item.key,
@@ -163,7 +208,26 @@ class Home extends Component {
         />
       );
     });
+  }
 
+  cashInModal(){
+    this.setState({showModal: true})
+  }
+
+  onDecline() {
+    this.setState({ showModal: false });
+  }
+
+  onAccept() {
+    this.onDecline();
+    this.props.cashInSteps();
+    setTimeout(() => {
+      this.props.resetChangeStats({
+        stats: {
+          pawPoints: 0
+        }
+      })
+    }, 2200);
   }
 
 }
@@ -221,4 +285,4 @@ const mapStateToProps = (state) => {
   return {...state.pet, backpack: arr}
 }
 
-export default connect(mapStateToProps,{ consumeItem, resetChangeStats })(Home);
+export default connect(mapStateToProps,{ consumeItem, resetChangeStats, cashInSteps, updateStepCount })(Home);

@@ -1,22 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, NativeAppEventEmitter, NativeModules } from 'react-native';
+import { View, Text, NativeAppEventEmitter } from 'react-native';
 import Health from '../services/health';
 
-import { Button, Card, CardSection } from './common';
+import { Card, CardSection } from './common';
 
 class FitnessData extends Component {
 
   constructor(props) {
     super(props);
-
-    // FitnessData.printData("Birthday Party", "4 Hello_World Drive, Palo Alto");
-    // FitnessData.testCallback("Yes, you can.", (error, result) => {
-    //   if(error){
-    //     console.log('testCallback error', error);
-    //   } else {
-    //     console.log('testCallback result', result);
-    //   }
-    // });
 
     this.state = {
       steps: [],
@@ -28,7 +19,7 @@ class FitnessData extends Component {
 
   componentWillMount() {
     console.log('componentWillMount');
-    this.updateStepsCount();
+
     this.subscription = NativeAppEventEmitter.addListener(
       'StepStats',
       (body) => {
@@ -36,6 +27,7 @@ class FitnessData extends Component {
         this.setState({steps: [body], pressCount: this.state.pressCount + 1});
       }
     );
+    this.updateStepsCount();
   }
 
   componentWillUnmount(){
