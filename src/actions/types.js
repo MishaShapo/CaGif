@@ -13,3 +13,5 @@ export const CONSUME_ITEM = 'consume_item';
 export const RESET_CHANGE_STATS = 'reset_change_stats';
 export const CASH_IN_STEPS = 'cash_in_steps';
 export const UPDATE_STEP_COUNT = 'update_step_count';
+export const UPDATE_UPDATE_TIMER = 'update_update_timer';
+export const RESET_GAME = 'reset_game';

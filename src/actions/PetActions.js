@@ -3,7 +3,9 @@ import {
   CONSUME_ITEM,
   RESET_CHANGE_STATS,
   CASH_IN_STEPS,
-  UPDATE_STEP_COUNT
+  UPDATE_STEP_COUNT,
+  UPDATE_UPDATE_TIMER,
+  RESET_GAME
 } from './types';
 
 export const updateWellbeingStats = (stats) => {
@@ -37,5 +39,17 @@ export const updateStepCount = (steps) => {
   return {
     type: UPDATE_STEP_COUNT,
     payload: steps
+  }
+}
+
+export const updateUpdateTimer = () => {
+  return {
+    type: UPDATE_UPDATE_TIMER
+  }
+}
+
+export const resetGame = () => {
+  return {
+    type: RESET_GAME
   }
 }

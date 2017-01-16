@@ -46,7 +46,8 @@ const styles = {
   },
   key: {
     flex: 3,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: 'white'
   },
   buttonStyle: {
     flex: 4

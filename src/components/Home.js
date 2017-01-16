@@ -6,8 +6,9 @@ import { connect } from 'react-redux';
 import {HitBoxSprite} from './common';
 import WellbeingBar from './WellbeingBar';
 import CashInModal from './CashInModal';
+import LoseGameModal from './LoseGameModal';
 import { sprites, staticImages, merchandise } from '@assets/images';
-import { consumeItem, resetChangeStats, cashInSteps, updateStepCount } from '../actions';
+import { consumeItem, resetChangeStats, cashInSteps, updateStepCount, resetGame } from '../actions';
 import Health from '../services/health';
 
 class Home extends Component {
@@ -18,7 +19,9 @@ class Home extends Component {
     this.state = {
       animationState: spriteAnimations.IDLE,
       dragging: false,
-      showModal: false
+      showModal: false,
+      lostGame: false,
+      wellbeingStats: {health: 100, hunger: 100, mood: 100, pawPoints: 200}
     };
 
     this.getAnimationState = this.getAnimationState.bind(this);
@@ -29,6 +32,7 @@ class Home extends Component {
     this.cashInModal = this.cashInModal.bind(this);
     this.onDecline = this.onDecline.bind(this);
     this.onAccept = this.onAccept.bind(this);
+    this.restartGame = this.restartGame.bind(this);
   }
 
   componentWillMount(){
@@ -38,7 +42,6 @@ class Home extends Component {
         if(steps.error){
           console.log('Error with native event listener :', steps.error);
         }else {
-          console.log('StepStats handler',steps);
           this.props.updateStepCount(steps.value);
         }
 
@@ -52,7 +55,17 @@ class Home extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-      this.getAnimationState(nextProps.stats.health);
+      this.getAnimationState(nextProps.stats);
+      const { health, hunger, mood} = nextProps.stats;
+      if( health <= 0 || hunger <= 0 || mood <= 0){
+        this.setState({lostGame: true});
+      }
+      const displayStats = {};
+      const { statsChanges, stats } = nextProps;
+      for(let i in statsChanges){
+        displayStats[i] = (statsChanges[i] === 0) ? stats[i] : statsChanges[i]
+      }
+      this.setState({wellbeingStats: displayStats})
   }
 
   render() {
@@ -91,7 +104,7 @@ class Home extends Component {
               {this.renderBackpackItems()}
               <WellbeingBar
                 style={styles.wellbeingBarStyle}
-                stats={this.getStats()}
+                stats={this.state.wellbeingStats}
                 cashInModal={this.cashInModal}
               />
               <CashInModal
@@ -101,6 +114,10 @@ class Home extends Component {
                 onAccept={this.onAccept}
                 onDecline={this.onDecline}
               />
+              <LoseGameModal
+                visible={this.state.lostGame}
+                onAccept={this.restartGame}
+              />
             </Image>
           </Stage>
         </Loop>
@@ -108,19 +125,16 @@ class Home extends Component {
     );
   }
 
-  getStats(){
-    const displayStats = {};
-    const { statsChanges, stats } = this.props;
-    for(let i in statsChanges){
-      displayStats[i] = (statsChanges[i] === 0) ? stats[i] : statsChanges[i]
-    }
-    return displayStats;
+  restartGame(){
+    this.props.resetGame();
+    this.setState({lostGame: false});
   }
 
-  getAnimationState(health){
+  getAnimationState(stats){
+    const { health, hunger, mood } = stats;
     if(this.state.dragging){
       return this.setState({animationState: spriteAnimations.WALK});
-    } else if( health > 50){
+    } else if( health > 20 && hunger > 20 && mood > 20){
       return this.setState({animationState: spriteAnimations.IDLE});
     } else {
       return this.setState({animationState: spriteAnimations.HURT});
@@ -130,7 +144,7 @@ class Home extends Component {
   touchStart(){
     this.setState({
       dragging: true
-    },() => this.getAnimationState(this.props.stats.health));
+    },() => this.getAnimationState(this.props.stats));
 
   }
 
@@ -138,7 +152,7 @@ class Home extends Component {
     this.checkCollision();
     this.setState({
       dragging: false
-    },() => this.getAnimationState(this.props.stats.health));
+    },() => this.getAnimationState(this.props.stats));
   }
 
   checkCollision(item) {
@@ -285,4 +299,4 @@ const mapStateToProps = (state) => {
   return {...state.pet, backpack: arr}
 }
 
-export default connect(mapStateToProps,{ consumeItem, resetChangeStats, cashInSteps, updateStepCount })(Home);
+export default connect(mapStateToProps,{ consumeItem, resetChangeStats, cashInSteps, updateStepCount, resetGame })(Home);

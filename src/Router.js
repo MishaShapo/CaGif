@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Navigator, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-import { updateWellbeingStats } from './actions';
+import { updateWellbeingStats, updateUpdateTimer } from './actions';
 
 
 import Home from './components/Home';
@@ -9,6 +9,8 @@ import Store from './components/Store';
 import Backpack from './components/Backpack';
 import LoginForm from './components/LoginForm';
 import FitnessData from './components/FitnessData'
+
+const UPDATE_INTERVAL = Math.round(1000 * 60 * 60 * 72 / 33);
 
 
 class RouterComponent extends Component {
@@ -18,21 +20,24 @@ class RouterComponent extends Component {
     this.updateStats = this.updateStats.bind(this);
   }
 
-  // componentDidMount(){
-  //   // this.wellbeingTimer = setInterval(this.updateStats,10000);
-  // }
-  //
-  // componentWillUnmount(){
-  //   // clearInterval(this.wellbeingTimer);
-  // }
+  componentDidMount(){
+    this.updateStats();
+    this.wellbeingTimer = setInterval(this.updateStats,UPDATE_INTERVAL); //every 2.18 hours
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.wellbeingTimer);
+  }
 
   updateStats() {
-    const {mood, hunger, health, pawPoints } = this.props;
+    const {mood, hunger, health, pawPoints, lastUpdate } = this.props;
+    const multiplier = Math.round(((Date.now() - lastUpdate) / UPDATE_INTERVAL));
     this.props.updateWellbeingStats({
-      "mood": (mood - 2),
-      "hunger": (hunger - 4),
-      "health": (health - 1)
+      "mood": (mood - 2 * multiplier),
+      "hunger": (hunger - 3 * multiplier),
+      "health": (health - 1 * multiplier)
     });
+    this.props.updateUpdateTimer();
   }
 
   render() {
@@ -164,8 +169,9 @@ const styles = {
 
 const mapStateToProps = state => {
   const { mood, hunger, health, pawPoints } = state.pet.stats;
+  const {lastUpdate} = state.pet;
 
-  return { mood, hunger, health, pawPoints };
+  return { mood, hunger, health, pawPoints, lastUpdate };
 };
 
-export default connect(mapStateToProps, { updateWellbeingStats })(RouterComponent);
+export default connect(mapStateToProps, { updateWellbeingStats, updateUpdateTimer })(RouterComponent);

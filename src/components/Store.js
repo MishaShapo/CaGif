@@ -18,29 +18,38 @@ class Store extends Component {
     this.onDecline = this.onDecline.bind(this);
     this.onAccept = this.onAccept.bind(this);
 
-    this.state = {
-      showModal: false,
-      currentItem: undefined
-    };
-
-    this.ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => {
+        console.log('r1:  ',r1, ", r2: ", r2);
+        return r1.price > this.props.pawPoints;
+        // return r1 !== r2;
+      }
     });
 
-    this.dataSource = this.ds.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}));
+
+
+    this.state = {
+      showModal: false,
+      currentItem: undefined,
+      dataSource: ds.cloneWithRows(Object.entries(inventory).map(kvPair => {
+        return {...kvPair[1],key: kvPair[0]}
+      }))
+    };
   }
 
-  componentWillReceiveProps(){
+  componentDidReceiveProps(){
     this.createDataSource();
   }
 
   createDataSource() {
     //Each row item with have key, price, and statsChanges
-    this.dataSource = this.ds.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}));
+    console.log('creating dataSource')
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}))
+    });
   }
 
   renderRow(item) {
-    console.log('renderRow pp<price: ', this.props.pawPoints < item.price, " key: ", item.key)
     return (<Merchandise
     name={item.key}
     onPress={() => {this.buy(item)}}
@@ -56,10 +65,10 @@ class Store extends Component {
         >
         <ListView contentContainerStyle={styles.list}
         enableEmptySections
-        dataSource={this.dataSource}
+        dataSource={this.state.dataSource}
         renderRow={this.renderRow}
-        pageSize={12}
-        initialListSize={12}
+        pageSize={9}
+        initialListSize={9}
         />
         <PurchaseDialog
           visible={this.state.showModal}

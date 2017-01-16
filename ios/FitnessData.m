@@ -56,7 +56,7 @@ RCT_EXPORT_METHOD(askForPermissionToReadTypes:(NSArray *)types callback:(RCTResp
 
 
 RCT_EXPORT_METHOD(getStepStats:(NSDate * )startDate){
-  RCTLogInfo(@"getStepsStats native log");
+//  RCTLogInfo(@"getStepsStats native log");
   
   
   NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -117,7 +117,7 @@ RCT_EXPORT_METHOD(getStepStats:(NSDate * )startDate){
       abort();
     }
     
-    RCTLogInfo(@"initalResultsHanlder");
+//    RCTLogInfo(@"initalResultsHanlder");
     
 //    NSMutableArray *output = [NSMutableArray array];
 //    
@@ -168,7 +168,7 @@ RCT_EXPORT_METHOD(getStepStats:(NSDate * )startDate){
       abort();
     }
     
-    RCTLogInfo(@"statisticsUpdateHandler");
+//    RCTLogInfo(@"statisticsUpdateHandler");
 //    NSMutableArray *output = [NSMutableArray array];
 //
 //    // we want "populated" statistics only, so we use result.statistics to iterate

@@ -2,36 +2,56 @@ import React, { Component } from 'react';
 import { StatusBar } from 'react-native';
 
 import { Provider } from 'react-redux';
+import * as storage from 'redux-storage';
 import { createStore, applyMiddleware } from 'redux';
-import firebase from 'firebase';
 import ReduxThunk from 'redux-thunk';
+import createEngine from 'redux-storage-engine-reactnativeasyncstorage';
+import debounce from 'redux-storage-decorator-debounce'
+
 
 import reducers from './reducers';
 import Router from './Router';
+import { Spinner } from './components/common';
+import {UPDATE_STEP_COUNT} from './actions';
 
 class App extends Component {
 
-  componentWillMount() {
-    const config = {
-      apiKey: "AIzaSyDSvjanQGqsN8NHaUlOdBOh18olZSzC-hk",
-      authDomain: "cagif-a15cb.firebaseapp.com",
-      databaseURL: "https://cagif-a15cb.firebaseio.com",
-      storageBucket: "cagif-a15cb.appspot.com",
-      messagingSenderId: "830656814906"
-    };
-    firebase.initializeApp(config);
+  constructor(props){
+    super(props);
+    this.state = {
+      loaded: false
+    }
+    StatusBar.setHidden(true, 'slide');
+    const reducer = storage.reducer(reducers);
+    const eng = createEngine('cagif-save-key');
+    const engine = debounce(eng, 1500);
+    const middleware = storage.createMiddleware(engine,[UPDATE_STEP_COUNT]);
+    const createStoreWithMiddleware = applyMiddleware(middleware,ReduxThunk)(createStore);
+    this.store = createStoreWithMiddleware(reducer);
+
+    const load = storage.createLoader(engine);
+    load(this.store)
+      .then((newState) => this.setState({loaded: true}))
+      .catch(() => console.log('Error loading state from async storage'))
+
   }
 
   render() {
-    StatusBar.setHidden(true, 'slide');
-    const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
+    if(this.state.loaded){
+      return (
+        <Provider store={this.store}>
+          <Router />
+        </Provider>
+      );
+    } else {
+      return (
+        <Spinner />
+      );
+    }
 
-    return (
-      <Provider store={store}>
-        <Router />
-      </Provider>
-    );
   }
+
+
 }
 
 

@@ -128,7 +128,7 @@ const styles = {
   },
   statWrapperStyle: {
     borderRadius: 6,
-    width: 50,
+    width: 60,
     left: 0,
     height: 50,
     backgroundColor: "#3232324c",

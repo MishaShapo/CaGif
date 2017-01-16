@@ -4,7 +4,9 @@ import {
   CONSUME_ITEM,
   RESET_CHANGE_STATS,
   CASH_IN_STEPS,
-  UPDATE_STEP_COUNT
+  UPDATE_STEP_COUNT,
+  UPDATE_UPDATE_TIMER,
+  RESET_GAME
 } from '../actions/types';
 
 import inventory from '../data/inventory.json';
@@ -25,8 +27,9 @@ const INITIAL_STATE = {
   steps: {
     count: 0,
     cashedIn: 0,
-    lastDayCashedIn: Date.now() / (1000 * 60 * 60 * 24) // ms, sec, min, hour = days
-  }
+    lastDayCashedIn: Math.floor(Date.now() / (1000 * 60 * 60 * 24)) // ms, sec, min, hour = days
+  },
+  lastUpdate: Date.now()
 };
 
 /*
@@ -67,7 +70,7 @@ export default (state = INITIAL_STATE, action) => {
       for( let stat in statsChanges){
         if(newState.stats[stat]){
           newState.statsChanges[stat] = ((statsChanges[stat] > 0) ? "+" : "") + statsChanges[stat];
-          newState.stats[stat] += statsChanges[stat];
+          newState.stats[stat] = Math.min(100, newState.stats[stat] + statsChanges[stat]);
         }
       }
       return newState;
@@ -88,7 +91,8 @@ export default (state = INITIAL_STATE, action) => {
     }
     case CASH_IN_STEPS: {
       const newState = {...state};
-      const today = Date.now() / (1000 * 60 * 60 * 24); // ms, sec,
+      const today = Math.floor(Date.now() / (1000 * 60 * 60 * 24)); // ms, sec,
+
       let { lastDayCashedIn, cashedIn, count} = newState.steps;
       if(lastDayCashedIn !== today){
         cashedIn = 0;
@@ -107,6 +111,16 @@ export default (state = INITIAL_STATE, action) => {
       const newState = {...state};
       newState.steps.count = action.payload;
       return newState;
+    }
+    case UPDATE_UPDATE_TIMER: {
+      const newState = {...state};
+      newState.lastUpdate = Date.now()
+      return newState;
+    }
+    case RESET_GAME: {
+      const newState = {...INITIAL_STATE};
+      newState.lastUpdate = Date.now();
+      return newState
     }
     default:
       return state;

@@ -3,7 +3,8 @@ import {Dimensions} from 'react-native';
 import {
   STORE_BUY,
   BACKPACK_PLACE,
-  CONSUME_ITEM
+  CONSUME_ITEM,
+  RESET_GAME
 } from '../actions/types';
 const INITIAL_STATE = {};
 
@@ -48,11 +49,14 @@ export default (state = INITIAL_STATE, action) => {
         newState[key].quantity--;
         const nextToPlace = newState[key].items.find((element) => element.left === null);
         nextToPlace.left = Math.floor(Math.random()*(width - 60 - 60 +1)+60);
-        nextToPlace.top = Math.floor(Math.random()*(height - 60 - 60 +1)+60);
+        nextToPlace.top = Math.floor(Math.random()*(height - 80 - 60 +1)+60);
         return newState;
       }
 
       return state;
+    }
+    case RESET_GAME: {
+      return {...INITIAL_STATE};
     }
     default:
       return state;
