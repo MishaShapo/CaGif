@@ -26,6 +26,7 @@ class RouterComponent extends Component {
   }
 
   componentWillUnmount(){
+    this.props.updateUpdateTimer();
     clearInterval(this.wellbeingTimer);
   }
 
