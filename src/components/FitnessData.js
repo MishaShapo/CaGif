@@ -18,12 +18,10 @@ class FitnessData extends Component {
   }
 
   componentWillMount() {
-    console.log('componentWillMount');
 
     this.subscription = NativeAppEventEmitter.addListener(
       'StepStats',
       (body) => {
-        console.log('StepStats handler',body);
         this.setState({steps: [body], pressCount: this.state.pressCount + 1});
       }
     );
@@ -35,7 +33,6 @@ class FitnessData extends Component {
   }
 
   renderStepsData() {
-    console.log('rendering data', this.state.steps);
     return this.state.steps.map((day,i) => {
       return (
         <CardSection key={i}>
@@ -46,7 +43,6 @@ class FitnessData extends Component {
   }
 
   updateStepsCount() {
-    console.log("setting steps");
     Health()
     .then((steps) => {
       this.setState({

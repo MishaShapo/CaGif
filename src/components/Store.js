@@ -20,9 +20,7 @@ class Store extends Component {
 
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => {
-        console.log('r1:  ',r1, ", r2: ", r2);
         return r1.price > this.props.pawPoints;
-        // return r1 !== r2;
       }
     });
 
@@ -43,7 +41,6 @@ class Store extends Component {
 
   createDataSource() {
     //Each row item with have key, price, and statsChanges
-    console.log('creating dataSource')
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}))
     });
@@ -58,7 +55,6 @@ class Store extends Component {
     />);
   }
   render() {
-    console.log('inventory dataSource', this.state.dataSource);
     return (
       <Image
         source={staticImages.storeBackground}

@@ -52,7 +52,6 @@ class PetStat extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('petStat nextProps', nextProps);
 
     this.setState( (prevState, props) => {
       if(nextProps.value.toString().startsWith("+") || nextProps.value.toString().startsWith("-")){

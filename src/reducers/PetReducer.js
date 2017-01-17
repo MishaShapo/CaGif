@@ -49,6 +49,8 @@ if(count > cashedIn){
 }
 
 */
+//                         1 PawPoint for every x steps
+const CASH_IN_MULTIPLIER = 1 / 25;
 
 export default (state = INITIAL_STATE, action) => {
   switch(action.type) {
@@ -98,8 +100,8 @@ export default (state = INITIAL_STATE, action) => {
         cashedIn = 0;
       }
       if(count > cashedIn){
-        newState.stats.pawPoints += (count - cashedIn);
-        newState.statsChanges.pawPoints = (((count - cashedIn) > 0) ? "+" : "") + (count - cashedIn);
+        newState.stats.pawPoints += Math.floor((count - cashedIn) * CASH_IN_MULTIPLIER);
+        newState.statsChanges.pawPoints = (((count - cashedIn) > 0) ? "+" : "") + Math.floor(((count - cashedIn)* CASH_IN_MULTIPLIER));
         cashedIn = count;
         lastDayCashedIn = today;
       }
@@ -109,7 +111,7 @@ export default (state = INITIAL_STATE, action) => {
     }
     case UPDATE_STEP_COUNT: {
       const newState = {...state};
-      newState.steps.count = action.payload;
+      newState.steps.count = Math.floor(action.payload);
       return newState;
     }
     case UPDATE_UPDATE_TIMER: {
