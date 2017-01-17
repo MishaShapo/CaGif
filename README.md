@@ -14,7 +14,7 @@ API to the React logic-side JS. Redux is used to manage and save state across th
 While building this app, I blogged my experiences as well as problems/solutions at [my personal portfolio](http://www.cs.utexas.edu/~mps/).
 
 ##Screenshots
-![Lots of Food](https://drive.google.com/file/d/0B1XZ0c96WHnhR1EwUjgtS0dua0k/view?usp=sharing)
+![Lots of Food](https://goo.gl/photos/cJn7Aj7UmgPKRS5S9)
 ![Store Screen](https://drive.google.com/file/d/0B1XZ0c96WHnhcDFXSl9ocEZBZ1U/view?usp=sharing)
 ![Purchas Dialog Box](https://drive.google.com/file/d/0B1XZ0c96WHnhZHNGNmpSZDNmeGc/view?usp=sharing)
 ![Backpack Screen](https://drive.google.com/file/d/0B1XZ0c96WHnhcDNNaXB3Z3htSmc/view?usp=sharing)
