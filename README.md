@@ -1,6 +1,5 @@
 # CaGif - Fitness. Felines. Fun. :smiley_cat:
 [![BuddyBuild](https://dashboard.buddybuild.com/api/statusImage?appID=587ce87f183f3101000e6b38&branch=master&build=latest)](https://dashboard.buddybuild.com/apps/587ce87f183f3101000e6b38/build/latest?branch=master)
-Health Games Revolutionized
 
 ##Health Games Revolutionized
 Walk with your phone and earn PawPoints for each step you take.
