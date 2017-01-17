@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListView, Image } from 'react-native';
+import { ListView, Image, Text, Dimensions, View } from 'react-native';
 import { connect } from 'react-redux';
 import { backpackPlace } from '../actions';
 
@@ -39,6 +39,7 @@ class Backpack extends Component {
   }
   render() {
     return (
+      <View style={styles.bgImage}>
       <Image
         source={staticImages.backpackBackground}
         style={styles.bgImage}
@@ -46,15 +47,25 @@ class Backpack extends Component {
       >
         <ListView
         contentContainerStyle={styles.list}
-        style={styles.containerStyle}
         enableEmptySections
+        removeClippedSubviews={false}
         dataSource={this.dataSource}
         renderRow={this.renderRow}
-        pageSize={15}
-        initialListSize={15}
+        pageSize={this.props.inventory.length}
+        initialListSize={this.props.inventory.length}
         />
+        {this.renderEmptyBackpackHint()}
       </Image>
+      </View>
     );
+  }
+
+  renderEmptyBackpackHint(){
+    if(this.props.inventory.length === 0){
+      return (
+        <Text style={styles.hintStyle}>{"Your Backpack is empty.\nTry buying some items in the Store."}</Text>
+      );
+    }
   }
 
   place(item) {
@@ -69,8 +80,18 @@ const styles = {
         flexWrap: 'wrap'
   },
   bgImage: {
+    position: 'relative',
     flex: 1,
-    position: 'relative'
+    width: Dimensions.get('window').width
+  },
+  hintStyle: {
+    position: 'absolute',
+    top:200,
+    left: 20,
+    fontSize: 22,
+    textAlign:'center',
+    fontWeight: '900',
+    color: 'white'
   }
 }
 

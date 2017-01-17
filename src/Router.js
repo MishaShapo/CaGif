@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navigator, Image, TouchableOpacity } from 'react-native';
+import { Navigator, Image, TouchableOpacity, Text, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import { updateWellbeingStats, updateUpdateTimer } from './actions';
 
@@ -49,6 +49,7 @@ class RouterComponent extends Component {
       <Navigator
         initialRoute={routes[0]}
         initialRouteStack={routes}
+        sceneStyle={styles.sceneStyle}
         renderScene={(route, navigator) => {
           switch (route.title) {
             case "Home":
@@ -98,7 +99,10 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
+                          if(navigator.getCurrentRoutes().pop().title === "Home"){
                             navigator.push({title: "Backpack"});
+                          }
+
                         }}>
                           <Image
                             source={require('../graphics/icons/backpack_icon.png')}
@@ -108,7 +112,11 @@ class RouterComponent extends Component {
                       );
                     case "Store":
                       return(
-                        <TouchableOpacity onPress={() => navigator.pop()}>
+                        <TouchableOpacity onPress={ () =>{
+                          if(navigator.getCurrentRoutes().pop().title === "Store"){
+                            navigator.pop();
+                          }
+                        }}>
                           <Image
                             source={require('../graphics/icons/home_icon.png')}
                             style={styles.navigationIconStyle}
@@ -124,7 +132,9 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
+                          if(navigator.getCurrentRoutes().pop().title === "Home"){
                             navigator.push({title: "Store"});
+                          }
                         }}>
                           <Image
                             source={require('../graphics/icons/store_icon.png')}
@@ -136,7 +146,11 @@ class RouterComponent extends Component {
                       return null;
                     case "Backpack":
                       return (
-                        <TouchableOpacity onPress={() => navigator.pop()}>
+                        <TouchableOpacity onPress={() => {
+                          if(navigator.getCurrentRoutes().pop().title === "Backpack"){
+                            navigator.pop();
+                          }
+                        }}>
                           <Image
                             source={require('../graphics/icons/home_icon.png')}
                             style={styles.navigationIconStyle}
@@ -145,7 +159,17 @@ class RouterComponent extends Component {
                       );
                 }
               },
-              Title: () => {null}
+              Title: (route, navigator) => {
+                if(route.title === "Store"){
+                  return (
+                    <Text style={styles.titleStyle}>{this.props.pawPoints} PawPoints</Text>
+                  );
+                } else{
+                  return (
+                    <Text style={styles.titleStyle}>{route.title}</Text>
+                  );
+                }
+              }
             }}
           />
         }
@@ -164,6 +188,16 @@ const styles = {
   navigationBarStyle: {
     backgroundColor:'#007bff',
     borderBottomWidth: 0
+  },
+  titleStyle:{
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white'
+  },
+  sceneStyle: {
+    flex:1,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
   }
 }
 

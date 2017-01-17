@@ -42,7 +42,7 @@ class Home extends Component {
         if(steps.error){
           console.log('Error with native event listener :', steps.error);
         }else {
-          this.props.updateStepCount(steps.value);
+          this.props.updateStepCount(Math.floor(steps.value));
         }
 
       }
@@ -81,6 +81,7 @@ class Home extends Component {
             <Image
               source={staticImages.petBackground}
               style={styles.bgStyle}
+              resizeMode={"stretch"}
             >
               <HitBoxSprite
               ref="mainSprite"
@@ -262,7 +263,9 @@ const styles = {
     position: 'relative'
   },
   bgStyle: {
-    position: 'relative'
+    position: 'relative',
+    flex: 1,
+    width: Dimensions.get('window').width
   },
   characterStyle: {
     width: 210,
@@ -275,13 +278,16 @@ const styles = {
     height: 64
   },
   wellbeingBarStyle: {
-    height: 55 ,
+    height: 55,
     width: Dimensions.get('window').width,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'flex-end',
     position: 'absolute',
-    top: Dimensions.get('window').height - 55
+    paddingTop: 5,
+    borderTopWidth: 2,
+    borderColor: "#44444444",
+    top: Dimensions.get('window').height - 65
   }
 }
 

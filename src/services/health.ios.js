@@ -23,6 +23,7 @@ function requestData() {
     return new Promise((resolve, reject) => {
         FitnessData.getStepStats(Date.now());
         resolve(true);
+        reject(false);
     });
 }
 export default () => {

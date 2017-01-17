@@ -40,7 +40,7 @@ class PurchaseDialog extends Component {
           <View style={containerStyle}>
             <CardSection style={cardSectionStyle}>
               {Object.entries(statsChanges).map((kvPair) => (
-                <StatChangeBar stat={kvPair[1]} key={kvPair[0]} />
+                <StatChangeBar stat={kvPair[1]} key={kvPair[0]} imageSource={kvPair[0] + "Icon"} />
               ))}
 
               <Text style={[textStyle,{marginVertical : 10}]}>

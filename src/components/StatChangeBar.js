@@ -3,13 +3,13 @@ import { View, Text, Image } from 'react-native';
 
 import { staticImages } from '@assets/images';
 
-const StatChangeBar = ({stat}) => {
+const StatChangeBar = ({stat, imageSource}) => {
 
   const { statsWrapperStyle, progressStyle, barStyle, textStyle} = styles;
   return (
     <View style={statsWrapperStyle}>
       <Image
-        source={staticImages.moodIcon}
+        source={staticImages[imageSource]}
       />
       <View style={[progressStyle, {borderColor: (stat < 0) ? '#e04435' : 'limegreen'}]}>
         <View

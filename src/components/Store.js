@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListView, Image } from 'react-native';
+import { ListView, Image, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import { buyMerchandise } from '../actions';
 
@@ -37,7 +37,7 @@ class Store extends Component {
     };
   }
 
-  componentDidReceiveProps(){
+  componentWillReceiveProps(){
     this.createDataSource();
   }
 
@@ -58,17 +58,21 @@ class Store extends Component {
     />);
   }
   render() {
+    console.log('inventory dataSource', this.state.dataSource);
     return (
       <Image
         source={staticImages.storeBackground}
-        style={styles.bgStyle}
+        style={styles.bgImage}
+        resizeMode={"stretch"}
         >
-        <ListView contentContainerStyle={styles.list}
+        <ListView
+        contentContainerStyle={styles.list}
         enableEmptySections
+        removeClippedSubviews={false}
         dataSource={this.state.dataSource}
         renderRow={this.renderRow}
-        pageSize={9}
-        initialListSize={9}
+        pageSize={Object.keys(inventory).length}
+        initialListSize={Object.keys(inventory).length}
         />
         <PurchaseDialog
           visible={this.state.showModal}
@@ -103,7 +107,9 @@ const styles = {
         flexWrap: 'wrap'
   },
   bgImage: {
-    position: 'relative'
+    position: 'relative',
+    flex: 1,
+    width: Dimensions.get('window').width
   }
 }
 

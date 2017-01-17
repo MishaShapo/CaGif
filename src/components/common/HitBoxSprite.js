@@ -83,6 +83,7 @@ class HitBoxSprite extends Component {
           tileHeight={tileHeight}
           steps={steps}
           state={animationState}
+          ticksPerFrame={4}
           ref={sprite => this.sprite = sprite}
           hitBox={hitBox}
         />
