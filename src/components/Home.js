@@ -56,7 +56,7 @@ class Home extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-      // console.log('nextProps : ', nextProps);
+      console.log('nextProps : ', nextProps);
       this.getAnimationState(nextProps.stats);
       const { health, hunger, mood} = nextProps.stats;
       if( health <= 0 || hunger <= 0 || mood <= 0){
@@ -129,7 +129,6 @@ class Home extends Component {
   }
 
   restartGame(){
-    console.log('resetting game');
     this.props.resetGame();
     this.setState({lostGame: false});
   }
@@ -241,7 +240,6 @@ class Home extends Component {
     const { health, hunger, mood} = this.props.stats;
     console.log('onDecline props.stats : ', this.props.stats);
     if( health <= 0 || hunger <= 0 || mood <= 0){
-      console.log('state.lostGame = ')
       if(!this.state.lostGame){
         this.setState({lostGame: true});
       }

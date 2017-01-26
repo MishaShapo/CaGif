@@ -9,9 +9,8 @@ import Store from './components/Store';
 import Backpack from './components/Backpack';
 import LoginForm from './components/LoginForm';
 import FitnessData from './components/FitnessData'
+import { UPDATE_INTERVAL } from './services/constants';
 
-// const UPDATE_INTERVAL = Math.round(1000 * 60 * 60);
-const UPDATE_INTERVAL = (1000 * 2);
 
 
 class RouterComponent extends Component {
@@ -19,6 +18,7 @@ class RouterComponent extends Component {
   constructor(props) {
     super(props);
     this.updateStats = this.updateStats.bind(this);
+    this.configureScene = this.configureScene.bind(this);
   }
 
   componentDidMount(){
@@ -44,14 +44,39 @@ class RouterComponent extends Component {
 
   }
 
+  configureScene(route, routeStack){
+    if(route.title == "Backpack") {
+      return {
+        ...Navigator.SceneConfigs.HorizontalSwipeJump,
+        gestures: {
+          jumpForward: {
+            ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpForward
+          }
+        }
+      }
+    } else if(route.title == "Store"){
+      return {
+        ...Navigator.SceneConfigs.HorizontalSwipeJump,
+        gestures: {
+          jumpBack: {
+            ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpBack
+          }
+        }
+      }
+    }
+    return Navigator.SceneConfigs.HorizontalSwipeJump;
+  }
+
   render() {
     const routes = [
-        {title: "Home"}
+      {title: "Backpack"},
+      {title: "Home"},
+      {title: "Store"}
     ];
 
     return(
       <Navigator
-        initialRoute={routes[0]}
+        initialRoute={routes[1]}
         initialRouteStack={routes}
         sceneStyle={styles.sceneStyle}
         renderScene={(route, navigator) => {
@@ -68,33 +93,7 @@ class RouterComponent extends Component {
               return <FitnessData />
           }
         }}
-        configureScene={(route, routeStack) => {
-          if(routeStack !== undefined){ //From Home to Store/Backpack
-            if(route.title === "Store") {
-              return {
-                ...Navigator.SceneConfigs.HorizontalSwipeJump,
-                gestures: {}
-              }
-            } else {
-              return {
-                ...Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft,
-                gestures: {}
-              }
-            }
-          } else { //From Store/Backpack to Home
-            if(route.title === "Store") {
-              return {
-                ...Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft,
-                gestures: {}
-              }
-            } else {
-              return {
-                ...Navigator.SceneConfigs.HorizontalSwipeJump,
-                gestures: {}
-              }
-            }
-          }
-        }}
+        configureScene={this.configureScene}
         navigationBar={
           <Navigator.NavigationBar
             routeMapper={{
@@ -103,11 +102,9 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
-                          let routes = navigator.getCurrentRoutes();
-                          if(routes[routes.length - 1].title === "Home"){
-                            navigator.push({title: "Backpack"});
+                          if(navigator.state.presentedIndex == 1){
+                            navigator.jumpBack();
                           }
-
                         }}>
                           <Image
                             source={require('../graphics/icons/backpack_icon.png')}
@@ -118,10 +115,10 @@ class RouterComponent extends Component {
                     case "Store":
                       return(
                         <TouchableOpacity onPress={ () =>{
-                          let routes = navigator.getCurrentRoutes();
-                          if(routes[routes.length - 1].title === "Store"){
-                            navigator.pop();
+                          if(navigator.state.presentedIndex == 2){
+                            navigator.jumpBack();
                           }
+
                         }}>
                           <Image
                             source={require('../graphics/icons/home_icon.png')}
@@ -138,10 +135,10 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
-                          let routes = navigator.getCurrentRoutes();
-                          if(routes[routes.length - 1].title === "Home"){
-                            navigator.push({title: 'Store'});
+                          if(navigator.state.presentedIndex == 1){
+                            navigator.jumpForward();
                           }
+
                         }}>
                           <Image
                             source={require('../graphics/icons/store_icon.png')}
@@ -154,10 +151,10 @@ class RouterComponent extends Component {
                     case "Backpack":
                       return (
                         <TouchableOpacity onPress={() => {
-                          let routes = navigator.getCurrentRoutes();
-                          if(routes[routes.length - 1].title === "Backpack"){
-                            navigator.pop();
+                          if(navigator.state.presentedIndex == 0){
+                            navigator.jumpForward();
                           }
+
                         }}>
                           <Image
                             source={require('../graphics/icons/home_icon.png')}

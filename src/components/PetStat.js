@@ -61,7 +61,6 @@ class PetStat extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('pet stat receiving props');
     this.delayedAnimateStat(nextProps);
   }
 
