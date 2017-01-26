@@ -10,7 +10,8 @@ import Backpack from './components/Backpack';
 import LoginForm from './components/LoginForm';
 import FitnessData from './components/FitnessData'
 
-const UPDATE_INTERVAL = Math.round(1000 * 60 * 60 * 72 / 33);
+// const UPDATE_INTERVAL = Math.round(1000 * 60 * 60);
+const UPDATE_INTERVAL = (1000 * 2);
 
 
 class RouterComponent extends Component {
@@ -22,23 +23,25 @@ class RouterComponent extends Component {
 
   componentDidMount(){
     this.updateStats();
-    this.wellbeingTimer = setInterval(this.updateStats,UPDATE_INTERVAL); //every 2.18 hours
+    this.wellbeingTimer = setInterval(this.updateStats,UPDATE_INTERVAL); //every hour
   }
 
   componentWillUnmount(){
-    this.props.updateUpdateTimer();
     clearInterval(this.wellbeingTimer);
   }
 
   updateStats() {
     const {mood, hunger, health, pawPoints, lastUpdate } = this.props;
     const multiplier = Math.round(((Date.now() - lastUpdate) / UPDATE_INTERVAL));
-    this.props.updateWellbeingStats({
-      "mood": (mood - 2 * multiplier),
-      "hunger": (hunger - 3 * multiplier),
-      "health": (health - 1 * multiplier)
-    });
-    this.props.updateUpdateTimer();
+    if((multiplier >= 1) && (mood > 0 && hunger > 0 && health > 0)){
+      this.props.updateWellbeingStats({
+        "mood": (mood - 2 * multiplier),
+        "hunger": (hunger - 3 * multiplier),
+        "health": (health - 1 * multiplier)
+      });
+      this.props.updateUpdateTimer();
+    }
+
   }
 
   render() {
@@ -100,7 +103,8 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
-                          if(navigator.getCurrentRoutes().pop().title === "Home"){
+                          let routes = navigator.getCurrentRoutes();
+                          if(routes[routes.length - 1].title === "Home"){
                             navigator.push({title: "Backpack"});
                           }
 
@@ -114,7 +118,8 @@ class RouterComponent extends Component {
                     case "Store":
                       return(
                         <TouchableOpacity onPress={ () =>{
-                          if(navigator.getCurrentRoutes().pop().title === "Store"){
+                          let routes = navigator.getCurrentRoutes();
+                          if(routes[routes.length - 1].title === "Store"){
                             navigator.pop();
                           }
                         }}>
@@ -133,8 +138,9 @@ class RouterComponent extends Component {
                     case "Home":
                       return (
                         <TouchableOpacity onPress={() => {
-                          if(navigator.getCurrentRoutes().pop().title === "Home"){
-                            navigator.push({title: "Store"});
+                          let routes = navigator.getCurrentRoutes();
+                          if(routes[routes.length - 1].title === "Home"){
+                            navigator.push({title: 'Store'});
                           }
                         }}>
                           <Image
@@ -148,7 +154,8 @@ class RouterComponent extends Component {
                     case "Backpack":
                       return (
                         <TouchableOpacity onPress={() => {
-                          if(navigator.getCurrentRoutes().pop().title === "Backpack"){
+                          let routes = navigator.getCurrentRoutes();
+                          if(routes[routes.length - 1].title === "Backpack"){
                             navigator.pop();
                           }
                         }}>
@@ -163,7 +170,7 @@ class RouterComponent extends Component {
               Title: (route, navigator) => {
                 if(route.title === "Store"){
                   return (
-                    <Text style={styles.titleStyle}>{this.props.pawPoints} PawPoints</Text>
+                    <Text style={styles.titleStyle}> Store | {this.props.pawPoints} PawPoints</Text>
                   );
                 } else{
                   return (

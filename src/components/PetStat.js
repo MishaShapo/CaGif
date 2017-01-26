@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { TouchableOpacity, Animated, View, Text } from 'react-native';
+import debounce from 'lodash/debounce';
+import { MIN_STAT_VALUE } from '../services/constants';
 
 import { Sprite } from './common';
 
@@ -25,7 +27,7 @@ class PetStat extends Component {
       fadeAnim: new Animated.Value(0),
       animationState: new Animated.Value(parseInt(value)),
       textColor: "#111",
-      dirty: false
+      backgroundColor: null
     }
     if(this.props.onPress === undefined){
       this.onPress = this.onPress.bind(this);
@@ -33,6 +35,7 @@ class PetStat extends Component {
       this.onPress = this.props.onPress;
     }
 
+    this.delayedAnimateStat = debounce(this.animateStat.bind(this),1000,{leading:true});
 
     this.appear = Animated.timing(
       this.state.fadeAnim,
@@ -52,22 +55,30 @@ class PetStat extends Component {
   }
 
   componentWillReceiveProps(nextProps){
+    // console.log('pet stat receiving props');
+    this.delayedAnimateStat(nextProps);
+  }
 
+  animateStat(nextProps){
     this.setState( (prevState, props) => {
       if(nextProps.value.toString().startsWith("+") || nextProps.value.toString().startsWith("-")){
         this.appear.start(() => {
           this.delayedDisappear.start();
         });
         return {
-          textColor: (nextProps.value.toString().startsWith("+")) ? "#32cd32": "#e04435"
+          textColor: (nextProps.value.toString().startsWith("+")) ? "rgba(50, 205, 50,0.9)": "rgba(224, 68, 53,0.9)"
         }
-      } else {
+      } else if(nextProps.value < MIN_STAT_VALUE){
         return {
-          textColor: "#111"
+          textColor: "rgb(255, 0, 0)"
+        }
+      }
+      else {
+        return {
+          textColor: "rgba(17, 17, 17,0.9)"
         }
       }
     });
-
   }
 
 
@@ -127,7 +138,7 @@ const styles = {
   },
   statWrapperStyle: {
     borderRadius: 6,
-    width: 60,
+    width: 50,
     left: 0,
     height: 50,
     backgroundColor: "#3232324c",

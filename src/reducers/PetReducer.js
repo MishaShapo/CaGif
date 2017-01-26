@@ -1,3 +1,6 @@
+
+import cloneDeep from 'lodash/cloneDeep';
+
 import {
   UPDATE_WELLBEING_STATS,
   STORE_BUY,
@@ -6,14 +9,16 @@ import {
   CASH_IN_STEPS,
   UPDATE_STEP_COUNT,
   UPDATE_UPDATE_TIMER,
-  RESET_GAME
+  RESET_GAME,
+  UPDATE_STEP_DATA
 } from '../actions/types';
 
+import { CASH_IN_MULTIPLIER } from '../services/constants';
 import inventory from '../data/inventory.json';
 
 const INITIAL_STATE = {
   stats:{
-    pawPoints: 300,
+    pawPoints: 100,
     health: 100,
     hunger: 100,
     mood: 100
@@ -50,23 +55,18 @@ if(count > cashedIn){
 
 */
 //                         1 PawPoint for every x steps
-const CASH_IN_MULTIPLIER = 1 / 25;
+
 
 export default (state = INITIAL_STATE, action) => {
   switch(action.type) {
     case STORE_BUY: {
       const { price } = action.payload;
-      const newState = {
-        ...state,
-        stats:{
-          ...state.stats,
-          pawPoints: (state.stats.pawPoints - price)
-        }
-      };
+      const newState = cloneDeep(state);
+      newState.stats.pawPoints =(state.stats.pawPoints - price);
       return newState;
     }
     case CONSUME_ITEM: {
-      const newState = {...state};
+      const newState = cloneDeep(state);
       const { key } = action.payload;
       const { statsChanges } = inventory[key];
       for( let stat in statsChanges){
@@ -78,21 +78,21 @@ export default (state = INITIAL_STATE, action) => {
       return newState;
     }
     case RESET_CHANGE_STATS: {
-      const newState = {...state};
+      const newState = cloneDeep(state);
       for( let key in action.payload.stats){
         newState.statsChanges[key] = 0
       }
       return newState;
     }
     case UPDATE_WELLBEING_STATS: {
-      const newState = {...state};
+      const newState = cloneDeep(state);
       for( let key in action.payload){
         newState.stats[key] = action.payload[key];
       }
       return newState;
     }
     case CASH_IN_STEPS: {
-      const newState = {...state};
+      const newState = cloneDeep(state);
       const today = Math.floor(Date.now() / (1000 * 60 * 60 * 24)); // ms, sec,
 
       let { lastDayCashedIn, cashedIn, count} = newState.steps;
@@ -101,28 +101,39 @@ export default (state = INITIAL_STATE, action) => {
       }
       if(count > cashedIn){
         newState.stats.pawPoints += Math.floor((count - cashedIn) * CASH_IN_MULTIPLIER);
-        newState.statsChanges.pawPoints = (((count - cashedIn) > 0) ? "+" : "") + Math.floor(((count - cashedIn)* CASH_IN_MULTIPLIER));
-        cashedIn = count;
+        newState.statsChanges.pawPoints = (Math.floor((count - cashedIn) > 0) ? "+" : "") + Math.floor(((count - cashedIn)* CASH_IN_MULTIPLIER));
+        cashedIn += Math.floor((count - cashedIn) * CASH_IN_MULTIPLIER) / CASH_IN_MULTIPLIER;
         lastDayCashedIn = today;
       }
       newState.steps.cashedIn = cashedIn;
       newState.steps.lastDayCashedIn = lastDayCashedIn;
       return newState;
     }
+    case UPDATE_STEP_DATA: {
+      const newState = cloneDeep(state);
+      const today = Math.floor(Date.now() / (1000 * 60 * 60 * 24)); // ms, sec,
+
+      let { lastDayCashedIn } = newState.steps;
+      if(lastDayCashedIn !== today){
+        newState.steps.cashedIn = 0;
+        newState.steps.lastDayCashedIn = today;
+      }
+      return newState;
+    }
     case UPDATE_STEP_COUNT: {
-      const newState = {...state};
+      const newState = cloneDeep(state);
       newState.steps.count = Math.floor(action.payload);
       return newState;
     }
     case UPDATE_UPDATE_TIMER: {
-      const newState = {...state};
+      const newState = cloneDeep(state);
       newState.lastUpdate = Date.now()
       return newState;
     }
     case RESET_GAME: {
-      const newState = {...INITIAL_STATE};
+      const newState = cloneDeep(INITIAL_STATE);
       newState.lastUpdate = Date.now();
-      return newState
+      return newState;
     }
     default:
       return state;

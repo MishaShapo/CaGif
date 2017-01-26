@@ -20,7 +20,7 @@ class Store extends Component {
 
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => {
-        return r1.price > this.props.pawPoints;
+        return r1.disabled !== r2.disabled;
       }
     });
 
@@ -30,20 +30,29 @@ class Store extends Component {
       showModal: false,
       currentItem: undefined,
       dataSource: ds.cloneWithRows(Object.entries(inventory).map(kvPair => {
-        return {...kvPair[1],key: kvPair[0]}
+        const disabled = this.props.pawPoints < kvPair[1].price;
+        return {...kvPair[1],key: kvPair[0], disabled}
       }))
     };
   }
 
-  componentWillReceiveProps(){
-    this.createDataSource();
+  componentWillReceiveProps(nextProps){
+    this.createDataSource(nextProps);
   }
 
-  createDataSource() {
+  shoulComponentUpdate(nextProps){
+    return nextProps.pawPoints !== this.props.pawPoints;
+  }
+
+  createDataSource(nextProps) {
     //Each row item with have key, price, and statsChanges
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(Object.entries(inventory).map(kvPair => {return {...kvPair[1],key: kvPair[0]}}))
+      dataSource: this.state.dataSource.cloneWithRows(Object.entries(inventory).map(kvPair => {
+        const disabled = nextProps.pawPoints < kvPair[1].price;
+        return {...kvPair[1],key: kvPair[0], disabled};
+      }))
     });
+
   }
 
   renderRow(item) {
@@ -51,7 +60,7 @@ class Store extends Component {
     name={item.key}
     onPress={() => {this.buy(item)}}
     buttonText={`$${item.price} | Buy`}
-    disabled={this.props.pawPoints < item.price}
+    disabled={item.disabled}
     />);
   }
   render() {

@@ -55,17 +55,13 @@ RCT_EXPORT_METHOD(askForPermissionToReadTypes:(NSArray *)types callback:(RCTResp
 }
 
 
-RCT_EXPORT_METHOD(getStepStats:(NSDate * )startDate){
+RCT_EXPORT_METHOD(getStepStats){
 //  RCTLogInfo(@"getStepsStats native log");
   
   
   NSCalendar *calendar = [NSCalendar currentCalendar];
-  NSDateComponents *comps = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:startDate];
-  comps.hour = 0;
-  comps.minute = 0;
-  comps.second = 0;
   
-  NSDate *midnightOfStartDate = [calendar dateFromComponents:comps];
+  NSDate *midnightOfStartDate = [calendar startOfDayForDate:[NSDate date]];
   NSDate *anchorDate = midnightOfStartDate;
   
   HKQuantityType *stepType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierStepCount];
@@ -130,15 +126,11 @@ RCT_EXPORT_METHOD(getStepStats:(NSDate * )startDate){
 //    }
     
     NSDate *endDate = [NSDate date];
-//    NSDate *startDate = [calendar
-//                         dateByAddingUnit:NSCalendarUnitDay
-//                         value:-1
-//                         toDate:endDate
-//                         options:0];
-//    
+    NSDate *startDate = [calendar startOfDayForDate: [NSDate date]];
+//
 //    // Plot the weekly step counts over the past 3 months
     [results
-     enumerateStatisticsFromDate:anchorDate
+     enumerateStatisticsFromDate:startDate
      toDate:endDate
      withBlock:^(HKStatistics *result, BOOL *stop) {
        
@@ -180,14 +172,10 @@ RCT_EXPORT_METHOD(getStepStats:(NSDate * )startDate){
 //    }
     
     NSDate *endDate = [NSDate date];
-//    NSDate *startDate = [calendar
-//                         dateByAddingUnit:NSCalendarUnitDay
-//                         value:-1
-//                         toDate:endDate
-//                         options:0];
+    NSDate *startDate = [calendar startOfDayForDate: [NSDate date]];
     
     [results
-     enumerateStatisticsFromDate:anchorDate
+     enumerateStatisticsFromDate:startDate
      toDate:endDate
      withBlock:^(HKStatistics *result, BOOL *stop) {
        
@@ -198,7 +186,7 @@ RCT_EXPORT_METHOD(getStepStats:(NSDate * )startDate){
          
          // Call a custom method to plot each data point.
          NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-         [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+         [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
          NSString *dateString = [dateFormatter stringFromDate:date];
          
          //         callback(@[[NSNull null], @{@"value": [NSNumber numberWithDouble:value], @"date": dateString} ]);

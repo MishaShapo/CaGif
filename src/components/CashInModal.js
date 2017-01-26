@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { View, Modal, Text } from 'react-native';
 
 import { CardSection, Button } from './common';
+import { CASH_IN_MULTIPLIER } from '../services/constants';
 
 class CashInModal extends Component {
 
@@ -15,6 +16,7 @@ class CashInModal extends Component {
     } = this.props;
 
     const { cardSectionStyle, containerStyle, textStyle } = styles;
+    const pawPointsToCash = Math.floor((steps.count - steps.cashedIn) * CASH_IN_MULTIPLIER);
     return (
       <Modal
         animationType='slide'
@@ -24,21 +26,25 @@ class CashInModal extends Component {
       >
         <View style={containerStyle}>
           <CardSection style={cardSectionStyle}>
-            <Text style={[textStyle,{marginVertical : 10}]}>
+            <Text style={textStyle}>
               You have <Text style={{fontWeight: 'bold'}}>{pawPoints}</Text> PawPoints
             </Text>
-            <Text style={[textStyle,{marginVertical : 10}]}>
+            <Text style={textStyle}>
               You have walked <Text style={{fontWeight: 'bold'}}>{steps.count}</Text> steps in total today.
             </Text>
-            <Text style={[textStyle,{marginVertical : 10}]}>
+            <Text style={textStyle}>
               You have <Text style={{fontWeight: 'bold'}}>{(steps.count - steps.cashedIn) + " "}</Text>
-              available steps to cash in.
+              available steps to cash in {"\n"} for <Text style={{fontWeight: 'bold'}}>{pawPointsToCash}</Text> PawPoint{(pawPointsToCash !== 1) ? "s" : ""}.
             </Text>
           </CardSection>
 
           <CardSection style={cardSectionStyle}>
-            <Button onPress={onAccept} disabled={(steps.count <= steps.cashedIn)}>Cash In</Button>
+            <Button onPress={onAccept} disabled={(steps.count <= steps.cashedIn || (pawPointsToCash == 0))}>Cash In</Button>
             <Button onPress={onDecline}>Done</Button>
+          </CardSection>
+
+          <CardSection style={cardSectionStyle}>
+            <Text style={textStyle}>Be sure to check back daily! :) </Text>
           </CardSection>
         </View>
       </Modal>
@@ -69,7 +75,9 @@ const styles = {
     alignSelf: 'center',
     backgroundColor: 'transparent',
     fontSize: 18,
-    color: 'black'
+    color: 'black',
+    textAlign: 'center',
+    marginVertical: 10
   }
 };
 

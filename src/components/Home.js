@@ -8,8 +8,9 @@ import WellbeingBar from './WellbeingBar';
 import CashInModal from './CashInModal';
 import LoseGameModal from './LoseGameModal';
 import { sprites, staticImages, merchandise } from '@assets/images';
-import { consumeItem, resetChangeStats, cashInSteps, updateStepCount, resetGame } from '../actions';
+import { consumeItem, resetChangeStats, cashInSteps, updateStepCount, resetGame, updateStepData } from '../actions';
 import Health from '../services/health';
+import { MIN_STAT_VALUE } from '../services/constants';
 
 class Home extends Component {
 
@@ -21,7 +22,7 @@ class Home extends Component {
       dragging: false,
       showModal: false,
       lostGame: false,
-      wellbeingStats: {health: 100, hunger: 100, mood: 100, pawPoints: 200}
+      wellbeingStats: {health: 100, hunger: 100, mood: 100, pawPoints: 100}
     };
 
     this.getAnimationState = this.getAnimationState.bind(this);
@@ -55,10 +56,13 @@ class Home extends Component {
   }
 
   componentWillReceiveProps(nextProps){
+      console.log('nextProps : ', nextProps);
       this.getAnimationState(nextProps.stats);
       const { health, hunger, mood} = nextProps.stats;
       if( health <= 0 || hunger <= 0 || mood <= 0){
-        this.setState({lostGame: true});
+        if(!this.state.lostGame){
+          this.setState({lostGame: true});
+        }
       }
       const displayStats = {};
       const { statsChanges, stats } = nextProps;
@@ -127,18 +131,21 @@ class Home extends Component {
   }
 
   restartGame(){
+    console.log('resetting game');
     this.props.resetGame();
     this.setState({lostGame: false});
   }
 
   getAnimationState(stats){
     const { health, hunger, mood } = stats;
-    if(this.state.dragging){
-      return this.setState({animationState: spriteAnimations.WALK});
-    } else if( health > 20 && hunger > 20 && mood > 20){
-      return this.setState({animationState: spriteAnimations.IDLE});
-    } else {
+    if( health < MIN_STAT_VALUE ||
+        hunger < MIN_STAT_VALUE ||
+        mood < MIN_STAT_VALUE){
       return this.setState({animationState: spriteAnimations.HURT});
+    } else if(this.state.dragging){
+        return this.setState({animationState: spriteAnimations.WALK});
+    } else {
+      return this.setState({animationState: spriteAnimations.IDLE});
     }
   }
 
@@ -177,7 +184,7 @@ class Home extends Component {
               ...this.props.statsChanges
             }
           })
-        }, 2200);
+        }, 3200);
       }
     } else {
       const {backpack} = this.props;
@@ -192,7 +199,8 @@ class Home extends Component {
                 ...this.props.statsChanges
               }
             })
-          }, 2200);
+          }, 3200);
+          break;
         }
       }
     }
@@ -226,6 +234,7 @@ class Home extends Component {
   }
 
   cashInModal(){
+    this.props.updateStepData();
     this.setState({showModal: true})
   }
 
@@ -242,7 +251,7 @@ class Home extends Component {
           pawPoints: 0
         }
       })
-    }, 2200);
+    }, 3200);
   }
 
 }
@@ -305,4 +314,4 @@ const mapStateToProps = (state) => {
   return {...state.pet, backpack: arr}
 }
 
-export default connect(mapStateToProps,{ consumeItem, resetChangeStats, cashInSteps, updateStepCount, resetGame })(Home);
+export default connect(mapStateToProps,{ consumeItem, resetChangeStats, cashInSteps, updateStepCount, updateStepData, resetGame })(Home);

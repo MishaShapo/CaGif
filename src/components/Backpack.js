@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListView, Image, Text, Dimensions, View } from 'react-native';
+import { ListView, Image, Text, Dimensions, View, PixelRatio } from 'react-native';
 import { connect } from 'react-redux';
 import { backpackPlace } from '../actions';
 
@@ -34,7 +34,7 @@ class Backpack extends Component {
     name={item.key}
     onPress={() => {this.place(item)}}
     buttonText={`${item.quantity} left Place`}
-    disabled={(item.quantity > 0) ? false : true}
+    disabled={item.quantity == 0}
     />);
   }
   render() {
@@ -45,16 +45,9 @@ class Backpack extends Component {
         style={styles.bgImage}
         resizeMode={"stretch"}
       >
-        <ListView
-        contentContainerStyle={styles.list}
-        enableEmptySections
-        removeClippedSubviews={false}
-        dataSource={this.dataSource}
-        renderRow={this.renderRow}
-        pageSize={this.props.inventory.length}
-        initialListSize={this.props.inventory.length}
-        />
+        <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
         {this.renderEmptyBackpackHint()}
+        </View>
       </Image>
       </View>
     );
@@ -65,6 +58,18 @@ class Backpack extends Component {
       return (
         <Text style={styles.hintStyle}>{"Your Backpack is empty.\nTry buying some items in the Store."}</Text>
       );
+    } else {
+      return (
+        <ListView
+        contentContainerStyle={styles.list}
+        enableEmptySections
+        removeClippedSubviews={false}
+        dataSource={this.dataSource}
+        renderRow={this.renderRow}
+        pageSize={this.props.inventory.length}
+        initialListSize={this.props.inventory.length}
+        />
+      )
     }
   }
 
@@ -75,23 +80,27 @@ class Backpack extends Component {
 
 const styles = {
   list: {
-        marginTop: 55,
-        flexDirection: 'row',
-        flexWrap: 'wrap'
+    marginTop: 55,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   bgImage: {
     position: 'relative',
     flex: 1,
-    width: Dimensions.get('window').width
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   hintStyle: {
-    position: 'absolute',
-    top:200,
-    left: 20,
+    position: 'relative',
+    // top: Dimensions.get('window').height / 2 - 50 * PixelRatio.get(),
+    // left: 5 * PixelRatio.get(),
     fontSize: 22,
     textAlign:'center',
     fontWeight: '900',
-    color: 'white'
+    color: 'white',
+    height: 100
   }
 }
 

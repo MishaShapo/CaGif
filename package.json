@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "firebase": "^3.6.4",
+    "lodash": "^4.17.4",
     "react": "15.4.1",
     "react-game-kit": "0.0.1",
     "react-native": "^0.40.0",

@@ -21,7 +21,7 @@ function requestData() {
     /* as native module requests are rendered asynchronously, add and return a promise */
     //before.getTime(), date,
     return new Promise((resolve, reject) => {
-        FitnessData.getStepStats(Date.now());
+        FitnessData.getStepStats();
         resolve(true);
         reject(false);
     });
