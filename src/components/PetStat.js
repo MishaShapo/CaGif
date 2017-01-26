@@ -1,7 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { TouchableOpacity, Animated, View, Text } from 'react-native';
 import debounce from 'lodash/debounce';
-import { MIN_STAT_VALUE } from '../services/constants';
+import {
+  MIN_STAT_VALUE,
+  WARNING_STAT_VALUE,
+  DANGER_COLOR,
+  WARNING_COLOR,
+  GOOD_COLOR
+ } from '../services/constants';
 
 import { Sprite } from './common';
 
@@ -27,7 +33,7 @@ class PetStat extends Component {
       fadeAnim: new Animated.Value(0),
       animationState: new Animated.Value(parseInt(value)),
       textColor: "#111",
-      backgroundColor: null
+      backgroundColor: "#1114"
     }
     if(this.props.onPress === undefined){
       this.onPress = this.onPress.bind(this);
@@ -35,7 +41,7 @@ class PetStat extends Component {
       this.onPress = this.props.onPress;
     }
 
-    this.delayedAnimateStat = debounce(this.animateStat.bind(this),1000,{leading:true});
+    this.delayedAnimateStat = debounce(this.animateStat.bind(this),1500,{leading:true});
 
     this.appear = Animated.timing(
       this.state.fadeAnim,
@@ -65,17 +71,27 @@ class PetStat extends Component {
         this.appear.start(() => {
           this.delayedDisappear.start();
         });
+        const valString = nextProps.value.toString();
+
         return {
-          textColor: (nextProps.value.toString().startsWith("+")) ? "rgba(50, 205, 50,0.9)": "rgba(224, 68, 53,0.9)"
+          textColor: (valString.startsWith("+")) ? GOOD_COLOR : "#111",
+          backgroundColor: (nextProps.value.toString().startsWith("-")) ? DANGER_COLOR : "#1114"
         }
       } else if(nextProps.value < MIN_STAT_VALUE){
         return {
-          textColor: "rgb(255, 0, 0)"
+          backgroundColor: DANGER_COLOR,
+          textColor: "#111"
+        }
+      } else if(nextProps.value < WARNING_STAT_VALUE){
+        return {
+          backgroundColor: WARNING_COLOR,
+          textColor: "#111"
         }
       }
       else {
         return {
-          textColor: "rgba(17, 17, 17,0.9)"
+          textColor: "#111",
+          backgroundColor: '#1114'
         }
       }
     });
@@ -115,6 +131,7 @@ class PetStat extends Component {
         </TouchableOpacity>
         <Animated.View style={[statWrapperStyle,{
           opacity: this.state.fadeAnim,
+          backgroundColor: this.state.backgroundColor,
           transform: [{
             translateY: this.state.fadeAnim.interpolate({
               inputRange: [0,1],
