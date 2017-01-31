@@ -55,4 +55,8 @@ const merchandise = {
   zucchini_loaf: require('./icons/merchandise/zucchini_loaf.png'),
 }
 
+const tutorial = {
+  home: ""
+};
+
 export { sprites, staticImages, merchandise };

@@ -57,7 +57,7 @@ class Home extends Component {
 
   componentWillReceiveProps(nextProps){
       console.log('nextProps : ', nextProps);
-      this.getAnimationState(nextProps.stats);
+      this.getAnimationState(nextProps.stats, nextProps.statsChanges);
       const { health, hunger, mood} = nextProps.stats;
       if( health <= 0 || hunger <= 0 || mood <= 0){
         this.onDecline();
@@ -133,12 +133,18 @@ class Home extends Component {
     this.setState({lostGame: false});
   }
 
-  getAnimationState(stats){
+  getAnimationState(stats, statsChanges){
     const { health, hunger, mood } = stats;
     if( health < MIN_STAT_VALUE ||
         hunger < MIN_STAT_VALUE ||
         mood < MIN_STAT_VALUE){
       return this.setState({animationState: spriteAnimations.HURT});
+    } else if(
+      statsChanges.health !== 0 ||
+      statsChanges.hunger !== 0 ||
+      statsChanges.mood !== 0
+    ){
+        return this.setState({animationState : spriteAnimations.JUMP});
     } else if(this.state.dragging){
         return this.setState({animationState: spriteAnimations.WALK});
     } else {
@@ -149,7 +155,7 @@ class Home extends Component {
   touchStart(){
     this.setState({
       dragging: true
-    },() => this.getAnimationState(this.props.stats));
+    },() => this.getAnimationState(this.props.stats, this.props.statsChanges));
 
   }
 
@@ -157,7 +163,7 @@ class Home extends Component {
     this.checkCollision();
     this.setState({
       dragging: false
-    },() => this.getAnimationState(this.props.stats));
+    },() => this.getAnimationState(this.props.stats, this.props.statsChanges));
   }
 
   checkCollision(item) {

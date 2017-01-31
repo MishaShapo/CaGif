@@ -50,7 +50,8 @@ class RouterComponent extends Component {
         ...Navigator.SceneConfigs.HorizontalSwipeJump,
         gestures: {
           jumpForward: {
-            ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpForward
+            ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpForward,
+            edgeHitWidth: 30
           }
         }
       }
@@ -59,12 +60,25 @@ class RouterComponent extends Component {
         ...Navigator.SceneConfigs.HorizontalSwipeJump,
         gestures: {
           jumpBack: {
-            ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpBack
+            ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpBack,
+            edgeHitWidth: 30
           }
         }
       }
     }
-    return Navigator.SceneConfigs.HorizontalSwipeJump;
+    return {
+      ...Navigator.SceneConfigs.HorizontalSwipeJump,
+      gestures: {
+        jumpBack: {
+          ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpBack,
+          edgeHitWidth: 30
+        },
+        jumpForward: {
+          ...Navigator.SceneConfigs.HorizontalSwipeJump.gestures.jumpForward,
+          edgeHitWidth: 30
+        }
+      }
+    };
   }
 
   render() {

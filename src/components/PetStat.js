@@ -42,6 +42,7 @@ class PetStat extends Component {
     }
 
     this.delayedAnimateStat = debounce(this.animateStat.bind(this),1500,{leading:true});
+    this.getAnimationState = this.getAnimationState.bind(this);
 
     this.appear = Animated.timing(
       this.state.fadeAnim,
@@ -108,6 +109,18 @@ class PetStat extends Component {
     }
   }
 
+  getAnimationState(){
+    const index = Math.round(this.state.animationState.interpolate({
+      inputRange: [1,100],
+      outputRange: [0, this.props.steps.length-1],
+      extrapolate: 'clamp',
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }).__getValue());
+    console.log(`petStat animationState for ${this.props.statKey} is ${index}`);
+    return index;
+  }
+
   render() {
     const { tileWidth, tileHeight, src, steps, value, style } = this.props;
     const { statWrapperStyle, statStyle } = styles;
@@ -119,13 +132,7 @@ class PetStat extends Component {
           tileWidth={tileWidth}
           tileHeight={tileHeight}
           steps={steps}
-          state={Math.round(this.state.animationState.interpolate({
-            inputRange: [1,100],
-            outputRange: [0, steps.length-1],
-            extrapolate: 'clamp',
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'clamp'
-          }).__getValue())}
+          state={getAnimationState}
           />
         </TouchableOpacity>
         <Animated.View style={[statWrapperStyle,{
